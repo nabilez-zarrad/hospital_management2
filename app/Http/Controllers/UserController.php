@@ -10,7 +10,7 @@ class UserController extends Controller
         if(Auth::check()&&Auth::user()->user_type=='user')
           
             {
-             return view("dashboard");  
+             return view("index");  
             }
         else if(Auth::check()&&Auth::user()->user_type=='admin')
             {
