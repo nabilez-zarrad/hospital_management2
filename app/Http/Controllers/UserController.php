@@ -10,7 +10,7 @@ use App\Models\Rendezvous;
 
 class UserController extends Controller
 {
-<<<<<<< HEAD
+
 
     public function Dashboard()
     {
@@ -23,21 +23,11 @@ class UserController extends Controller
         elseif(Auth::check() && Auth::user()->user_type == 'admin'){
             return view("admin.dashboard");
         }
-=======
-    public function Dashboard(){
-        if(Auth::check()&&Auth::user()->user_type=='user')
-            {
-             return view("index");  
-            }
-        else if(Auth::check()&&Auth::user()->user_type=='admin')
-            {
-             return view("admin.dashboard");  
-            }
-            else if(Auth::check()&&Auth::user()->user_type=="medecin")
-            {
-             return view("medecin.dashboard");
-            }
->>>>>>> b068db4a55c9fe982efd0edb2a6f286eb460919c
+        else if(Auth::check()&&Auth::user()->user_type=="medecin")
+        {
+             return view("medecin.doctor-dashboard");
+        }
+
         else{
             return redirect('/');
         }

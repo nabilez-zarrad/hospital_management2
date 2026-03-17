@@ -6,21 +6,28 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Medecin;
 use App\Models\Section;
+use App\Models\Patient;
 
 class Rendezvous extends Model
 {
     use HasFactory;
 
+    protected $table = 'rendezvous';
+
     protected $fillable = [
-        'name',
-        'email',
-        'phone',
-        'notes',
+
+        'patient_id',
         'medecin_id',
         'section_id',
-        'type',
-        'appointment'
+        'date_rendezvous',
+        'statut'
+
     ];
+
+    public function patient()
+    {
+        return $this->belongsTo(Patient::class,'patient_id');
+    }
 
     public function medecin()
     {
@@ -31,4 +38,5 @@ class Rendezvous extends Model
     {
         return $this->belongsTo(Section::class,'section_id');
     }
+
 }

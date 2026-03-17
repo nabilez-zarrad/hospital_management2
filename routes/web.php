@@ -3,7 +3,37 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\DoctorController;
 
+Route::middleware(['auth'])->group(function () {
+
+
+Route::get('/doctor/appointments',[DoctorController::class,'appointments'])->name('doctor.appointments');
+
+Route::get('/doctor/doctor_profile_settings',[DoctorController::class,'doctor_profile_settings'])->name('doctor.doctor_profile_settings')->middleware('auth');
+
+Route::get('/doctor/my_patients',[DoctorController::class,'my_patients'])->name('doctor.my_patients');
+
+Route::get('/doctor/schedule_timings',[DoctorController::class,'schedule_timings'])->name('doctor.schedule_timings');
+
+
+
+
+
+
+
+
+
+Route::post('/appointment/{id}/accept',
+[DoctorController::class,'acceptAppointment'])
+->name('appointment.accept');
+
+Route::post('/appointment/{id}/cancel',
+[DoctorController::class,'cancelAppointmentDoctor'])
+->name('appointment.cancel');
+
+});  
 
 Route::get('/', [UserController::class, 'Index'])->name('index');
 
