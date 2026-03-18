@@ -4,103 +4,117 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Section;
-use App\Models\Medecin;
-use App\Models\Rendezvous;
+use App\Models\Doctor;
+use App\Models\Patient;
+use App\Models\Appointment;
 
 class UserController extends Controller
 {
-
-
     public function Dashboard()
     {
-        $sections = Section::all();
-        $medecins = Medecin::with('section','image')->take(6)->get();
-
-        if(Auth::check() && Auth::user()->user_type == 'user'){
-            return view("patient.patient_dashboard", compact('sections','medecins'));
-        }
-        elseif(Auth::check() && Auth::user()->user_type == 'admin'){
-            return view("admin.dashboard");
-        }
-        else if(Auth::check()&&Auth::user()->user_type=="medecin")
-        {
-             return view("medecin.doctor-dashboard");
-        }
-
-        else{
+        // If you still have /dashboard route pointing here, keep it working without sections.
+        if (!Auth::check()) {
             return redirect('/');
         }
+
+        $user = Auth::user();
+
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+
+        if ($user->role === 'doctor') {
+            return redirect()->route('doctor.dashboard');
+        }
+
+        // patient
+        return redirect('/');
     }
 
     public function Index()
     {
-        $sections = Section::all();
-        $medecins = Medecin::with('section','image')->take(6)->get();
-
-        return view('index', compact('sections','medecins'));
+        $doctors = Doctor::query()->latest()->take(8)->get();
+        return view('index', compact('doctors'));
     }
 
-  public function doctors()
-{
-    $sections = Section::all();
-    $medecins = Medecin::with('section','image')->get();
-
-    return view('doctors', compact('medecins','sections'));
-}
-public function doctorProfile($id)
-{
-    $medecin = Medecin::with('section','image')->findOrFail($id);
-
-    return view('doctor_profile', compact('medecin'));
-}
-public function bookAppointment(Request $request)
-{
-    $request->validate([
-        'medecin_id' => 'required',
-        'date_rendezvous' => 'required'
-    ]);
-
-    Rendezvous::create([
-        'patient_id' => Auth::id(),
-        'medecin_id' => $request->medecin_id,
-        'section_id' => $request->section_id,
-        'date_rendezvous' => $request->date_rendezvous,
-        'statut' => 'non confirmé'
-    ]);
-
-    return back()->with('success','Appointment booked successfully');
-}
-public function myAppointments()
-{
-    $appointments = Rendezvous::with('medecin','section')
-        ->where('patient_id', Auth::id())
-        ->get();
-
-    return view('my_appointments', compact('appointments'));
-}
-public function cancelAppointment($id)
-{
-    $appointment = Rendezvous::findOrFail($id);
-
-    if($appointment->patient_id == Auth::id())
+    public function doctors()
     {
-        $appointment->delete();
+        $doctors = Doctor::query()->latest()->get();
+        return view('doctors', compact('doctors'));
     }
 
-    return back()->with('success','Appointment cancelled');
-}
-public function searchDoctors(Request $request)
-{
-    $query = $request->search;
+    public function doctorDetails($id)
+    {
+        $doctor = Doctor::findOrFail($id);
+        return view('doctor.details', compact('doctor'));
+    }
 
-    $medecins = Medecin::with('section')
-        ->where('name','LIKE',"%$query%")
-        ->orWhereHas('section', function($q) use ($query){
-            $q->where('name','LIKE',"%$query%");
-        })
-        ->get();
+    public function bookAppointment(Request $request)
+    {
+        $request->validate([
+            'doctor_id' => ['required', 'exists:doctors,id'],
+            'appointment_date' => ['required', 'date'],
+            'appointment_time' => ['required'],
+        ]);
 
-    return view('doctors', compact('medecins'));
-}
+        if (!Auth::check() || Auth::user()->role !== 'patient') {
+            return redirect()->route('login')->with('error', 'Only patients can book appointments.');
+        }
+
+        $patient = Patient::where('user_id', Auth::id())->first();
+        if (!$patient) {
+            return back()->with('error', 'Patient profile not found.');
+        }
+
+        Appointment::create([
+            'patient_id' => $patient->id,
+            'doctor_id' => $request->doctor_id,
+            'appointment_date' => $request->appointment_date,
+            'appointment_time' => $request->appointment_time,
+            'consulting_fee' => 0,
+            'booking_fee' => 0,
+            'video_fee' => 0,
+            'total' => 0,
+            'status' => 'pending',
+        ]);
+
+        return back()->with('success', 'Appointment booked successfully.');
+    }
+
+    public function myAppointments()
+    {
+        if (!Auth::check() || Auth::user()->role !== 'patient') {
+            return redirect()->route('login');
+        }
+
+        $patient = Patient::where('user_id', Auth::id())->first();
+        if (!$patient) {
+            return redirect('/')->with('error', 'Patient profile not found.');
+        }
+
+        $appointments = Appointment::with('doctor')
+            ->where('patient_id', $patient->id)
+            ->latest()
+            ->get();
+
+        return view('my_appointments', compact('appointments'));
+    }
+
+    public function cancelAppointment($id)
+    {
+        if (!Auth::check() || Auth::user()->role !== 'patient') {
+            return redirect()->route('login');
+        }
+
+        $patient = Patient::where('user_id', Auth::id())->first();
+        if (!$patient) {
+            return redirect('/')->with('error', 'Patient profile not found.');
+        }
+
+        $appointment = Appointment::where('patient_id', $patient->id)->findOrFail($id);
+        $appointment->status = 'cancelled';
+        $appointment->save();
+
+        return back()->with('success', 'Appointment cancelled.');
+    }
 }

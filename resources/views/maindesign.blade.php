@@ -143,7 +143,7 @@
 
 
 			<!-- Clinic and Specialities -->
-			@include('Clinic_and_Specialities')
+			@include('Clinic_and_Specialities', ['doctors' => $doctors ?? []])
 			<!-- Clinic and Specialities -->
 		  
 

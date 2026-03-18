@@ -13,7 +13,7 @@ Find the best doctors and book appointments easily
 
 <div class="search-box">
 
-<form action="{{ route('search.doctors') }}" method="GET">
+<form action="{{ route('doctors') }}" method="GET">
 
 <div class="form-group search-info">
 

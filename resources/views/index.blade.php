@@ -4,7 +4,7 @@
 
 
 @include('banner')
-@include('Clinic_and_Specialities')
+@include('Clinic_and_Specialities', ['doctors' => $doctors ?? []])
 
 @include('Popular_Section')
 

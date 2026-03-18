@@ -11,40 +11,29 @@
 @csrf
 
 <div class="form-group">
-<label>Name</label>
-<input type="text" name="nom" class="form-control">
+<label>First Name</label>
+<input type="text" name="first_name" class="form-control">
 </div>
 
 <div class="form-group">
-<label>Email</label>
-<input type="email" name="email" class="form-control">
+<label>Last Name</label>
+<input type="text" name="last_name" class="form-control">
 </div>
 
 <div class="form-group">
 <label>Phone</label>
-<input type="text" name="telephone" class="form-control">
+<input type="text" name="phone" class="form-control">
 </div>
 
 <div class="form-group">
 <label>Speciality</label>
-
-<select name="section_id" class="form-control">
-
-@foreach($sections as $section)
-
-<option value="{{ $section->id }}">
-{{ $section->nom }}
-</option>
-
-@endforeach
-
-</select>
+<input type="text" name="speciality" class="form-control">
 
 </div>
 
 <div class="form-group">
 <label>Address</label>
-<input type="text" name="adresse" class="form-control">
+<input type="text" name="address_line1" class="form-control">
 </div>
 
 <div class="form-group">
@@ -54,7 +43,7 @@
 
 <div class="form-group">
 <label>Description</label>
-<textarea name="description" class="form-control"></textarea>
+<textarea name="biography" class="form-control"></textarea>
 </div>
 
 <div class="form-group">

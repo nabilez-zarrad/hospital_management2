@@ -17,26 +17,20 @@ Discover our medical specialities
 <div class="col-md-9">
 
 <div class="specialities-slider slider">
+@php
+  $specialities = isset($doctors)
+    ? collect($doctors)->pluck('speciality')->filter()->unique()->take(12)
+    : collect();
+@endphp
 
-@foreach($sections as $section)
-
-<div class="speicality-item text-center">
-
-<div class="speicality-img">
-
-<img src="{{ asset('front-end/assets/img/specialities/specialities-01.png') }}"
-class="img-fluid">
-
-<span>
-<i class="fa fa-circle"></i>
-</span>
-
-</div>
-
-<p>{{ $section->name }}</p>
-
-</div>
-
+@foreach($specialities as $speciality)
+  <div class="speicality-item text-center">
+    <div class="speicality-img">
+      <img src="{{ asset('front-end/assets/img/specialities/specialities-01.png') }}" class="img-fluid">
+      <span><i class="fa fa-circle"></i></span>
+    </div>
+    <p>{{ $speciality }}</p>
+  </div>
 @endforeach
 
 </div>
