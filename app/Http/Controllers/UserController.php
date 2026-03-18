@@ -18,7 +18,7 @@ class UserController extends Controller
         $medecins = Medecin::with('section','image')->take(6)->get();
 
         if(Auth::check() && Auth::user()->user_type == 'user'){
-            return view("index", compact('sections','medecins'));
+            return view("patient.patient_dashboard", compact('sections','medecins'));
         }
         elseif(Auth::check() && Auth::user()->user_type == 'admin'){
             return view("admin.dashboard");
