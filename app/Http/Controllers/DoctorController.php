@@ -15,15 +15,19 @@ class DoctorController extends Controller
         return view('doctor.dashboard');
     }
 
-   public function appointments()
+
+public function appointments()
 {
     $doctor = Doctor::where('user_id', Auth::id())->first();
 
     if (!$doctor) {
-        return redirect()->back()->with('error', 'Doctor not found');
+        return "Had user machi doctor ❌";
     }
 
-    $appointments = Appointment::where('doctor_id', $doctor->id)->get();
+    $appointments = Appointment::with('patient')
+        ->where('doctor_id', $doctor->id)
+        ->latest()
+        ->get();
 
     return view('doctor.appointments', compact('appointments'));
 }

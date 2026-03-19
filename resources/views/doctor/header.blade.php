@@ -23,7 +23,9 @@
 						</div>
 						<ul class="main-nav">
 							<li>
-								<a href="index-2.html">Home</a>
+								<h1>
+   									Hello mr. {{ auth()->user()->doctor->first_name ?? 'Doctor' }}
+								</h1>	
 							</li>
 							
 							
