@@ -273,4 +273,5 @@ class DoctorController extends Controller
 
         return back()->with('success', 'Appointment cancelled');
     }
+    
 }

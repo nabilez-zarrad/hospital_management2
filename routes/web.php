@@ -94,7 +94,8 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/appointment/{id}/accept', [DoctorController::class, 'acceptAppointment'])->name('appointment.accept');
     Route::post('/appointment/{id}/cancel', [DoctorController::class, 'cancelAppointmentDoctor'])->name('appointment.cancel');
-});
+
+    });
 
 
 
