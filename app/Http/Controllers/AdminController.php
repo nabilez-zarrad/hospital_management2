@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Appointment;
 use App\Models\Doctor;
 use App\Models\Patient;
-use App\Models\Appointment;
-use App\Models\Section;
+use App\Models\Specialty;
+use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
@@ -16,7 +18,7 @@ class AdminController extends Controller
         $doctorsCount = Doctor::count();
         $patientsCount = Patient::count();
         $appointmentsCount = Appointment::count();
-        $specialtiesCount = Section::count();
+        $specialtiesCount = Specialty::count();
 
         $appointmentsByStatus = Appointment::select('status', DB::raw('count(*) as aggregate'))
             ->groupBy('status')
@@ -33,57 +35,72 @@ class AdminController extends Controller
 
     public function createDoctor()
     {
-        $doctors = Doctor::latest()->get();
-        return view('admin.add_doctor', compact('doctors'));
+        $specialties = Specialty::orderBy('name')->get();
+
+        return view('admin.add_doctor', compact('specialties'));
     }
 
     public function storeDoctor(Request $request)
     {
-        $image = null;
-
-        if ($request->hasFile('image')) {
-            $image = $request->file('image')->store('doctors', 'public');
-        }
-$request->validate([
-    'first_name' => 'required|string|max:255',
-    'last_name' => 'required|string|max:255',
-    'phone' => 'nullable|string|max:20',
-    'gender' => 'nullable|string|max:20',
-    'date_of_birth' => 'nullable|date',
-    'speciality' => 'nullable|string|max:255',
-    'clinic_name' => 'nullable|string|max:255',
-    'clinic_address' => 'nullable|string|max:255',
-    'city' => 'nullable|string|max:255',
-    'state' => 'nullable|string|max:255',
-    'country' => 'nullable|string|max:255',
-    'postal_code' => 'nullable|string|max:20',
-    'price' => 'nullable|numeric',
-    'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-]);
-        Doctor::create([
-            'user_id' => $request->user_id,
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'phone' => $request->phone,
-            'gender' => $request->gender,
-            'date_of_birth' => $request->date_of_birth,
-            'biography' => $request->biography,
-            'speciality' => $request->speciality,
-            'clinic_name' => $request->clinic_name,
-            'clinic_address' => $request->clinic_address,
-            'address_line1' => $request->address_line1,
-            'address_line2' => $request->address_line2,
-            'city' => $request->city,
-            'state' => $request->state,
-            'country' => $request->country,
-            'postal_code' => $request->postal_code,
-            'price' => $request->price ?? 0,
-            'is_free' => (bool) ($request->is_free ?? true),
-            'rating' => 0,
-            'total_reviews' => 0,
-            'image' => $image,
+        $validated = $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email',
+            'password' => 'nullable|string|min:8|confirmed',
+            'phone' => 'nullable|string|max:20',
+            'gender' => 'nullable|in:male,female',
+            'date_of_birth' => 'nullable|date',
+            'speciality' => 'nullable|string|max:255',
+            'specialty_id' => 'nullable|exists:specialties,id',
+            'clinic_name' => 'nullable|string|max:255',
+            'clinic_address' => 'nullable|string|max:255',
+            'city' => 'nullable|string|max:255',
+            'state' => 'nullable|string|max:255',
+            'country' => 'nullable|string|max:255',
+            'postal_code' => 'nullable|string|max:20',
+            'price' => 'nullable|numeric|min:0',
+            'is_free' => 'nullable|boolean',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
-        return back()->with('success', 'Doctor Added Successfully');
+        $image = $request->hasFile('image')
+            ? $request->file('image')->store('doctors', 'public')
+            : null;
+
+        DB::transaction(function () use ($validated, $image) {
+            $user = User::create([
+                'name' => trim($validated['first_name'] . ' ' . $validated['last_name']),
+                'email' => $validated['email'],
+                'password' => Hash::make($validated['password'] ?? 'Doctor@12345'),
+                'role' => 'doctor',
+            ]);
+
+            Doctor::create([
+                'user_id' => $user->id,
+                'username' => $user->name,
+                'email' => $user->email,
+                'first_name' => $validated['first_name'],
+                'last_name' => $validated['last_name'],
+                'phone' => $validated['phone'] ?? null,
+                'gender' => $validated['gender'] ?? null,
+                'date_of_birth' => $validated['date_of_birth'] ?? null,
+                'speciality' => $validated['speciality'] ?? null,
+                'specialty_id' => $validated['specialty_id'] ?? null,
+                'clinic_name' => $validated['clinic_name'] ?? null,
+                'clinic_address' => $validated['clinic_address'] ?? null,
+                'city' => $validated['city'] ?? null,
+                'state' => $validated['state'] ?? null,
+                'country' => $validated['country'] ?? null,
+                'postal_code' => $validated['postal_code'] ?? null,
+                'price' => $validated['price'] ?? 0,
+                'is_free' => (bool) ($validated['is_free'] ?? true),
+                'rating' => 0,
+                'total_reviews' => 0,
+                'image' => $image,
+            ]);
+        });
+
+        return redirect()->route('admin.doctors.index')
+            ->with('success', 'Doctor added successfully.');
     }
 }

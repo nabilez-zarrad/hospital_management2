@@ -20,23 +20,43 @@ class DoctorController extends Controller
 {
     public function dashboard()
     {
-        return view('doctor.dashboard');
+        $doctor = Doctor::with(['specialty', 'section'])->where('user_id', Auth::id())->first();
+        if (! $doctor) {
+            return redirect()->route('profile.edit')
+                ->with('error', 'Doctor profile is not set up for this account.');
+        }
+
+        $appointments = Appointment::with('patient.user')
+            ->where('doctor_id', $doctor->id)
+            ->latest('appointment_date')
+            ->latest('appointment_time')
+            ->take(10)
+            ->get();
+
+        return view('doctor.dashboard', [
+            'doctor' => $doctor,
+            'appointments' => $appointments,
+            'patientsCount' => Appointment::where('doctor_id', $doctor->id)->distinct('patient_id')->count('patient_id'),
+            'todayAppointmentsCount' => Appointment::where('doctor_id', $doctor->id)->whereDate('appointment_date', now())->count(),
+            'totalAppointmentsCount' => Appointment::where('doctor_id', $doctor->id)->count(),
+        ]);
     }
 
     public function appointments()
     {
-        $doctor = Doctor::where('user_id', Auth::id())->first();
-
-        if (!$doctor) {
-            return 'Had user machi doctor ❌';
+        $doctor = Doctor::with(['specialty', 'section'])->where('user_id', Auth::id())->first();
+        if (! $doctor) {
+            return redirect()->route('profile.edit')
+                ->with('error', 'Doctor profile is not set up for this account.');
         }
 
-        $appointments = Appointment::with('patient')
+        $appointments = Appointment::with('patient.user')
             ->where('doctor_id', $doctor->id)
-            ->latest()
+            ->latest('appointment_date')
+            ->latest('appointment_time')
             ->get();
 
-        return view('doctor.appointments', compact('appointments'));
+        return view('doctor.appointments', compact('appointments', 'doctor'));
     }
 
     public function profile_settings()
@@ -51,6 +71,11 @@ class DoctorController extends Controller
             'memberships',
             'registrations',
         ])->where('user_id', Auth::id())->first();
+
+        if (! $doctor) {
+            return redirect()->route('profile.edit')
+                ->with('error', 'Doctor profile is not set up for this account.');
+        }
 
         return view('doctor.profile_settings', compact('doctor'));
     }
@@ -127,124 +152,110 @@ class DoctorController extends Controller
                 'image' => $validated['image'] ?? $doctor->image,
             ]);
 
+            if ($doctor->user) {
+                $doctor->user->update([
+                    'name' => trim(($validated['first_name'] ?? '').' '.($validated['last_name'] ?? '')),
+                    'email' => $validated['email'] ?? $doctor->user->email,
+                    'mobile' => $validated['phone'] ?? $doctor->user->mobile,
+                ]);
+            }
+
             DoctorService::where('doctor_id', $doctor->id)->delete();
             if ($request->filled('services')) {
-                $services = array_filter(array_map('trim', explode(',', $request->services)));
-                foreach ($services as $service) {
-                    DoctorService::create([
-                        'doctor_id' => $doctor->id,
-                        'service' => $service,
-                    ]);
+                foreach (array_filter(array_map('trim', explode(',', $request->services))) as $service) {
+                    DoctorService::create(['doctor_id' => $doctor->id, 'service' => $service]);
                 }
             }
 
             DoctorSpecialization::where('doctor_id', $doctor->id)->delete();
             if ($request->filled('specializations')) {
-                $specializations = array_filter(array_map('trim', explode(',', $request->specializations)));
-                foreach ($specializations as $specialization) {
-                    DoctorSpecialization::create([
-                        'doctor_id' => $doctor->id,
-                        'specialization' => $specialization,
-                    ]);
+                foreach (array_filter(array_map('trim', explode(',', $request->specializations))) as $specialization) {
+                    DoctorSpecialization::create(['doctor_id' => $doctor->id, 'specialization' => $specialization]);
                 }
             }
 
             DoctorEducation::where('doctor_id', $doctor->id)->delete();
-            if ($request->has('education_degree')) {
-                foreach ($request->education_degree as $index => $degree) {
-                    $college = $request->education_college[$index] ?? null;
-                    $year = $request->education_year[$index] ?? null;
-
-                    if ($degree || $college || $year) {
-                        DoctorEducation::create([
-                            'doctor_id' => $doctor->id,
-                            'degree' => $degree,
-                            'college' => $college,
-                            'year_of_completion' => $year,
-                        ]);
-                    }
+            foreach ($request->education_degree ?? [] as $index => $degree) {
+                $college = $request->education_college[$index] ?? null;
+                $year = $request->education_year[$index] ?? null;
+                if ($degree || $college || $year) {
+                    DoctorEducation::create([
+                        'doctor_id' => $doctor->id,
+                        'degree' => $degree,
+                        'college' => $college,
+                        'year_of_completion' => $year,
+                    ]);
                 }
             }
 
             DoctorExperience::where('doctor_id', $doctor->id)->delete();
-            if ($request->has('experience_hospital')) {
-                foreach ($request->experience_hospital as $index => $hospital) {
-                    $from = $request->experience_from[$index] ?? null;
-                    $to = $request->experience_to[$index] ?? null;
-                    $designation = $request->experience_designation[$index] ?? null;
-
-                    if ($hospital || $from || $to || $designation) {
-                        DoctorExperience::create([
-                            'doctor_id' => $doctor->id,
-                            'hospital_name' => $hospital,
-                            'from' => $from,
-                            'to' => $to,
-                            'designation' => $designation,
-                        ]);
-                    }
+            foreach ($request->experience_hospital ?? [] as $index => $hospital) {
+                $from = $request->experience_from[$index] ?? null;
+                $to = $request->experience_to[$index] ?? null;
+                $designation = $request->experience_designation[$index] ?? null;
+                if ($hospital || $from || $to || $designation) {
+                    DoctorExperience::create([
+                        'doctor_id' => $doctor->id,
+                        'hospital_name' => $hospital,
+                        'from' => $from,
+                        'to' => $to,
+                        'designation' => $designation,
+                    ]);
                 }
             }
 
             DoctorAward::where('doctor_id', $doctor->id)->delete();
-            if ($request->has('award_name')) {
-                foreach ($request->award_name as $index => $award) {
-                    $year = $request->award_year[$index] ?? null;
-
-                    if ($award || $year) {
-                        DoctorAward::create([
-                            'doctor_id' => $doctor->id,
-                            'award' => $award,
-                            'year' => $year,
-                        ]);
-                    }
+            foreach ($request->award_name ?? [] as $index => $award) {
+                $year = $request->award_year[$index] ?? null;
+                if ($award || $year) {
+                    DoctorAward::create(['doctor_id' => $doctor->id, 'award' => $award, 'year' => $year]);
                 }
             }
 
             DoctorMembership::where('doctor_id', $doctor->id)->delete();
-            if ($request->has('membership_name')) {
-                foreach ($request->membership_name as $membership) {
-                    if ($membership) {
-                        DoctorMembership::create([
-                            'doctor_id' => $doctor->id,
-                            'membership' => $membership,
-                        ]);
-                    }
+            foreach ($request->membership_name ?? [] as $membership) {
+                if ($membership) {
+                    DoctorMembership::create(['doctor_id' => $doctor->id, 'membership' => $membership]);
                 }
             }
 
             DoctorRegistration::where('doctor_id', $doctor->id)->delete();
-            if ($request->has('registration_name')) {
-                foreach ($request->registration_name as $index => $registration) {
-                    $year = $request->registration_year[$index] ?? null;
-
-                    if ($registration || $year) {
-                        DoctorRegistration::create([
-                            'doctor_id' => $doctor->id,
-                            'registration' => $registration,
-                            'year' => $year,
-                        ]);
-                    }
+            foreach ($request->registration_name ?? [] as $index => $registration) {
+                $year = $request->registration_year[$index] ?? null;
+                if ($registration || $year) {
+                    DoctorRegistration::create(['doctor_id' => $doctor->id, 'registration' => $registration, 'year' => $year]);
                 }
             }
 
             if ($request->hasFile('clinic_images')) {
                 foreach ($request->file('clinic_images') as $image) {
                     $path = $image->store('doctor_clinic_images', 'public');
-
-                    DoctorClinicImage::create([
-                        'doctor_id' => $doctor->id,
-                        'image' => $path,
-                    ]);
+                    DoctorClinicImage::create(['doctor_id' => $doctor->id, 'image' => $path]);
                 }
             }
         });
 
-        return back()->with('success', 'Profile updated successfully');
+        return back()->with('success', 'Profile updated successfully.');
     }
 
     public function my_patients()
     {
-        return view('doctor.my_patients');
+        $doctor = Doctor::with(['specialty', 'section'])->where('user_id', Auth::id())->first();
+        if (! $doctor) {
+            return redirect()->route('profile.edit')
+                ->with('error', 'Doctor profile is not set up for this account.');
+        }
+
+        $patients = Appointment::with('patient.user')
+            ->where('doctor_id', $doctor->id)
+            ->latest('appointment_date')
+            ->get()
+            ->pluck('patient')
+            ->filter()
+            ->unique('id')
+            ->values();
+
+        return view('doctor.my_patients', compact('patients', 'doctor'));
     }
 
     public function schedule_timings()
@@ -254,24 +265,24 @@ class DoctorController extends Controller
 
     public function acceptAppointment($id)
     {
-        $doctor = Doctor::where('user_id', Auth::id())->first();
-
+        $doctor = Doctor::where('user_id', Auth::id())->firstOrFail();
         $appointment = Appointment::where('doctor_id', $doctor->id)->findOrFail($id);
-        $appointment->status = 'approved';
-        $appointment->save();
+        $appointment->update(['status' => 'approved']);
 
-        return back()->with('success', 'Appointment approved');
+        return back()->with('success', 'Appointment approved.');
     }
 
     public function cancelAppointmentDoctor($id)
     {
-        $doctor = Doctor::where('user_id', Auth::id())->first();
-
+        $doctor = Doctor::where('user_id', Auth::id())->firstOrFail();
         $appointment = Appointment::where('doctor_id', $doctor->id)->findOrFail($id);
-        $appointment->status = 'cancelled';
-        $appointment->save();
+        $appointment->update(['status' => 'cancelled']);
 
-        return back()->with('success', 'Appointment cancelled');
+        return back()->with('success', 'Appointment cancelled.');
     }
-    
+
+    public function rejectAppointment($id)
+    {
+        return $this->cancelAppointmentDoctor($id);
+    }
 }

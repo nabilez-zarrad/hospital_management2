@@ -1,65 +1,40 @@
 <header class="header">
-				<nav class="navbar navbar-expand-lg header-nav">
-					<div class="navbar-header">
-						<a id="mobile_btn" href="javascript:void(0);">
-							<span class="bar-icon">
-								<span></span>
-								<span></span>
-								<span></span>
-							</span>
-						</a>
-						<a href="index-2.html" class="navbar-brand logo">
-							<img src={{ asset('front-end/assets/img/logo.png') }} class="img-fluid" alt="Logo">
-						</a>
-					</div>
-					<div class="main-menu-wrapper">
-						<div class="menu-header">
-							<a href="index-2.html" class="menu-logo">
-								<img src={{ asset('front-end/assets/img/logo.png') }}	 class="img-fluid" alt="Logo">
-							</a>
-							<a id="menu_close" class="menu-close" href="javascript:void(0);">
-								<i class="fas fa-times"></i>
-							</a>
-						</div>
-						<ul class="main-nav">
-							<li>
-								<h1>
-   									
-								</h1>	
-							</li>
-							
-							
-							
-							
-						</ul>	 
-					</div>		 
-					<ul class="nav header-navbar-rht">
-						
-						
-						<!-- User Menu -->
-						<li class="nav-item dropdown has-arrow logged-item">
-							<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
-								<span class="user-img">
-									<img class="rounded-circle" src={{ asset('front-end/assets/img/doctors/doctor-thumb-02.jpg') }}  width="31" alt="Darren Elder">
-								</span>
-							</a>
-							<div class="dropdown-menu dropdown-menu-right">
-								<div class="user-header">
-									<div class="avatar avatar-sm">
-										<img src={{ asset('front-end/assets/img/doctors/doctor-thumb-02.jpg') }} alt="User Image" class="avatar-img rounded-circle">
-									</div>
-									<div class="user-text">
-										<h6>Darren Elder</h6>
-										<p class="text-muted mb-0">Doctor</p>
-									</div>
-								</div>
-								<a class="dropdown-item" href="doctor-dashboard.html">Dashboard</a>
-								<a class="dropdown-item" href="doctor-profile-settings.html">Profile Settings</a>
-								<a class="dropdown-item" href="login.html">Logout</a>
-							</div>
-						</li>
-						<!-- /User Menu -->
-						
-					</ul>
-				</nav>
-			</header>
+    <nav class="navbar navbar-expand-lg header-nav">
+        <div class="navbar-header">
+            <a href="{{ route('doctor.dashboard') }}" class="navbar-brand logo">
+                <img src="{{ asset('front-end/assets/img/logo.png') }}" class="img-fluid" alt="Logo">
+            </a>
+        </div>
+
+        <div class="main-menu-wrapper">
+            <ul class="main-nav">
+                <li><a href="{{ route('doctor.dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ route('doctor.appointments') }}">Appointments</a></li>
+                <li><a href="{{ route('doctor.my_patients') }}">Patients</a></li>
+            </ul>
+        </div>
+
+        <ul class="nav header-navbar-rht">
+            <li class="nav-item dropdown has-arrow logged-item">
+                <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
+                    <span class="user-img">
+                        <img class="rounded-circle" src="{{ auth()->user()->doctor?->profile_image_url ?? asset('front-end/assets/img/doctors/doctor-thumb-02.jpg') }}" width="31" alt="User">
+                    </span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <div class="user-header">
+                        <div class="user-text">
+                            <h6>{{ auth()->user()->doctor?->full_name ?? auth()->user()->name }}</h6>
+                            <p class="text-muted mb-0">Doctor</p>
+                        </div>
+                    </div>
+                    <a class="dropdown-item" href="{{ route('doctor.profile_settings') }}">Profile Settings</a>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button class="dropdown-item" type="submit">Logout</button>
+                    </form>
+                </div>
+            </li>
+        </ul>
+    </nav>
+</header>

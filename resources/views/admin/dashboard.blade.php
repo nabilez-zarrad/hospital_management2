@@ -42,7 +42,7 @@
                 <div class="card-body">
                     <h6 class="text-uppercase text-muted">Specialties</h6>
                     <div class="display-4">{{ $specialtiesCount ?? 0 }}</div>
-                    <span class="btn btn-sm btn-outline-secondary mt-2 disabled">From sections</span>
+                    <a href="{{ route('admin.specialties.index') }}" class="btn btn-sm btn-outline-primary mt-2">Manage specialties</a>
                 </div>
             </div>
         </div>

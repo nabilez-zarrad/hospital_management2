@@ -1,407 +1,150 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
-	
-<!-- doccure/checkout.html  30 Nov 2019 04:12:16 GMT -->
 <head>
-		<meta charset="utf-8">
-		<title>Doccure</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
-		
-		<!-- Favicons -->
-		<link href="{{ asset('front-end/assets/img/favicon.png') }}" rel="icon">
-		
-		<!-- Bootstrap CSS -->
-		<link rel="stylesheet" href="{{ asset('front-end/assets/css/bootstrap.min.css') }}">
-		
-		<!-- Fontawesome CSS -->
-		<link rel="stylesheet" href="{{ asset('front-end/assets/plugins/fontawesome/css/fontawesome.min.css') }}">
-		<link rel="stylesheet" href="{{ asset('front-end/assets/plugins/fontawesome/css/all.min.css') }}">
-		
-		<!-- Main CSS -->
-		<link rel="stylesheet" href="{{ asset('front-end/assets/css/style.css') }}">
-		
-		<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-		<!--[if lt IE 9]>
-			<script src="assets/js/html5shiv.min.js"></script>
-			<script src="assets/js/respond.min.js"></script>
-		<![endif]-->
-	
-	</head>
-	<body>
+    <meta charset="utf-8">
+    <title>Checkout</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+    <link href="{{ asset('front-end/assets/img/favicon.png') }}" rel="icon">
+    <link rel="stylesheet" href="{{ asset('front-end/assets/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('front-end/assets/plugins/fontawesome/css/fontawesome.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('front-end/assets/plugins/fontawesome/css/all.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('front-end/assets/css/style.css') }}">
+</head>
+<body>
+<div class="main-wrapper">
+    @include('patient.header')
 
-		<!-- Main Wrapper -->
-		<div class="main-wrapper">
-		
-			<!-- Header -->
-			@include('patient.header')
-			<!-- /Header -->
-			
-			<!-- Breadcrumb -->
-			<div class="breadcrumb-bar">
-				<div class="container-fluid">
-					<div class="row align-items-center">
-						<div class="col-md-12 col-12">
-							<nav aria-label="breadcrumb" class="page-breadcrumb">
-								<ol class="breadcrumb">
-									<li class="breadcrumb-item"><a href="index-2.html">Home</a></li>
-									<li class="breadcrumb-item active" aria-current="page">Checkout</li>
-								</ol>
-							</nav>
-							<h2 class="breadcrumb-title">Checkout</h2>
-						</div>
-					</div>
-				</div>
-			</div>
-			<!-- /Breadcrumb -->
-			
-			<!-- Page Content -->
-			<div class="content">
-				<div class="container">
-
-					<div class="row">
-						<div class="col-md-7 col-lg-8">
-							<div class="card">
-								<div class="card-body">
-								
-									<!-- Checkout Form -->
-									<form action="{{ route('checkout.store') }}" method="POST">
-    @csrf
-
-    <input type="hidden" name="doctor_id" value="{{ $doctor->id }}">
-    <input type="hidden" name="booking_date" value="{{ $date }}">
-    <input type="hidden" name="booking_time" value="{{ $time }}">
-
-    <div class="info-widget">
-        <h4 class="card-title">Personal Information</h4>
-        <div class="row">
-            <div class="col-md-6 col-sm-12">
-                <div class="form-group card-label">
-                    <label>First Name</label>
-                    <input name="first_name" value="{{ old('first_name', auth()->user()->first_name ?? '') }}" class="form-control" type="text">
-                </div>
-            </div>
-
-            <div class="col-md-6 col-sm-12">
-                <div class="form-group card-label">
-                    <label>Last Name</label>
-                    <input name="last_name" value="{{ old('last_name', auth()->user()->last_name ?? '') }}" class="form-control" type="text">
-                </div>
-            </div>
-
-            <div class="col-md-6 col-sm-12">
-                <div class="form-group card-label">
-                    <label>Email</label>
-                    <input name="email" value="{{ old('email', auth()->user()->email ?? '') }}" class="form-control" type="email">
-                </div>
-            </div>
-
-            <div class="col-md-6 col-sm-12">
-                <div class="form-group card-label">
-                    <label>Phone</label>
-                    <input name="phone" value="{{ old('phone', auth()->user()->phone ?? '') }}" class="form-control" type="text">
-                </div>
-            </div>
+    <div class="breadcrumb-bar">
+        <div class="container-fluid">
+            <h2 class="breadcrumb-title">Checkout</h2>
         </div>
-
-        <div class="exist-customer">Existing Customer? <a href="#">Click here to login</a></div>
     </div>
 
-    <div class="payment-widget">
-        <h4 class="card-title">Payment Method</h4>
-
-        <div class="payment-list">
-            <label class="payment-radio credit-card-option">
-                <input type="radio" name="payment_method" value="credit_card" {{ old('payment_method', 'paypal') == 'credit_card' ? 'checked' : '' }}>
-                <span class="checkmark"></span>
-                Credit card
-            </label>
+    <div class="content">
+        <div class="container">
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
             <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group card-label">
-                        <label for="card_name">Name on Card</label>
-                        <input name="name_on_card" value="{{ old('name_on_card') }}" class="form-control" id="card_name" type="text">
+                <div class="col-md-7 col-lg-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <form action="{{ route('checkout.store') }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="doctor_id" value="{{ $doctor->id }}">
+                                <input type="hidden" name="booking_date" value="{{ $date }}">
+                                <input type="hidden" name="booking_time" value="{{ $time }}">
+
+                                <h4 class="card-title">Personal Information</h4>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>First Name</label>
+                                            <input name="first_name" value="{{ old('first_name', $patient->first_name ?? str((string) auth()->user()->name)->before(' ')) }}" class="form-control" type="text" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Last Name</label>
+                                            <input name="last_name" value="{{ old('last_name', $patient->last_name ?? str((string) auth()->user()->name)->after(' ')) }}" class="form-control" type="text" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Email</label>
+                                            <input name="email" value="{{ old('email', auth()->user()->email) }}" class="form-control" type="email" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Phone</label>
+                                            <input name="phone" value="{{ old('phone', $patient->phone ?? auth()->user()->mobile ?? '') }}" class="form-control" type="text" required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <h4 class="card-title mt-3">Payment Method</h4>
+                                <div class="payment-list">
+                                    <label class="payment-radio">
+                                        <input type="radio" name="payment_method" value="paypal" @checked(old('payment_method', 'paypal') === 'paypal')>
+                                        <span class="checkmark"></span>
+                                        Paypal
+                                    </label>
+                                </div>
+                                <div class="payment-list">
+                                    <label class="payment-radio">
+                                        <input type="radio" name="payment_method" value="credit_card" @checked(old('payment_method') === 'credit_card')>
+                                        <span class="checkmark"></span>
+                                        Credit Card
+                                    </label>
+                                </div>
+
+                                <div class="terms-accept mt-3">
+                                    <label class="custom-checkbox">
+                                        <input name="terms_accept" type="checkbox" value="1" @checked(old('terms_accept'))>
+                                        <span class="checkmark"></span>
+                                        I have read and accept Terms & Conditions
+                                    </label>
+                                </div>
+
+                                <div class="submit-section mt-4">
+                                    <button type="submit" class="btn btn-primary submit-btn">Confirm and Pay</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
 
-                <div class="col-md-6">
-                    <div class="form-group card-label">
-                        <label for="card_number">Card Number</label>
-                        <input name="card_number" value="{{ old('card_number') }}" class="form-control" id="card_number" placeholder="1234 5678 9876 5432" type="text">
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="form-group card-label">
-                        <label for="expiry_month">Expiry Month</label>
-                        <input name="expiry_month" value="{{ old('expiry_month') }}" class="form-control" id="expiry_month" placeholder="MM" type="text">
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="form-group card-label">
-                        <label for="expiry_year">Expiry Year</label>
-                        <input name="expiry_year" value="{{ old('expiry_year') }}" class="form-control" id="expiry_year" placeholder="YY" type="text">
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="form-group card-label">
-                        <label for="cvv">CVV</label>
-                        <input name="cvv" value="{{ old('cvv') }}" class="form-control" id="cvv" type="text">
+                <div class="col-md-5 col-lg-4">
+                    <div class="card booking-card">
+                        <div class="card-header"><h4 class="card-title">Booking Summary</h4></div>
+                        <div class="card-body">
+                            <div class="booking-doc-info">
+                                <a href="{{ route('doctor.profile', $doctor->id) }}" class="booking-doc-img">
+                                    <img src="{{ $doctor->profile_image_url }}" alt="Doctor">
+                                </a>
+                                <div class="booking-info">
+                                    <h4>Dr. {{ $doctor->full_name }}</h4>
+                                    <div class="clinic-details">
+                                        <p class="doc-location"><i class="fas fa-map-marker-alt"></i> {{ $doctor->location_label }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="booking-summary">
+                                <ul class="booking-date">
+                                    <li>Date <span>{{ $date }}</span></li>
+                                    <li>Time <span>{{ $time }}</span></li>
+                                </ul>
+                                <ul class="booking-fee">
+                                    <li>Consulting Fee <span>{{ $doctor->is_free ? '$0.00' : '$' . number_format((float) $doctor->price, 2) }}</span></li>
+                                    <li>Booking Fee <span>$5.00</span></li>
+                                </ul>
+                                @php
+                                    $total = ($doctor->is_free ? 0 : (float) $doctor->price) + 5;
+                                @endphp
+                                <div class="booking-total">
+                                    <ul class="booking-total-list">
+                                        <li><span>Total</span><span class="total-cost">${{ number_format($total, 2) }}</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="payment-list">
-            <label class="payment-radio paypal-option">
-                <input type="radio" name="payment_method" value="paypal" {{ old('payment_method', 'paypal') == 'paypal' ? 'checked' : '' }}>
-                <span class="checkmark"></span>
-                Paypal
-            </label>
-        </div>
-
-        <div class="terms-accept">
-            <div class="custom-checkbox">
-                <input name="terms_accept" type="checkbox" id="terms_accept" value="1" {{ old('terms_accept') ? 'checked' : '' }}>
-                <label for="terms_accept">I have read and accept <a href="#">Terms &amp; Conditions</a></label>
-            </div>
-        </div>
-
-        <div class="submit-section mt-4">
-            <button type="submit" class="btn btn-primary submit-btn">Confirm and Pay</button>
         </div>
     </div>
-</form>
-									<!-- /Checkout Form -->
-									
-								</div>
-							</div>
-							
-						</div>
-						
-						<div class="col-md-5 col-lg-4 theiaStickySidebar">
-						
-							<!-- Booking Summary -->
-							<div class="card booking-card">
-								<div class="card-header">
-									<h4 class="card-title">Booking Summary</h4>
-								</div>
-								<div class="card-body">
-								
-									<!-- Booking Doctor Info -->
-									<div class="booking-doc-info">
-										<a href="doctor-profile.html" class="booking-doc-img">
-											<img src="{{ asset('front-end/assets/img/doctors/doctor-thumb-02.jpg') }}" alt="User Image">
-										</a>
-										<div class="booking-info">
-											{{-- <h4><a href="doctor-profile.html">Dr. {{ $doctor-> }}r</a></h4> --}}
-											<div class="rating">
-												<i class="fas fa-star filled"></i>
-												<i class="fas fa-star filled"></i>
-												<i class="fas fa-star filled"></i>
-												<i class="fas fa-star filled"></i>
-												<i class="fas fa-star"></i>
-												<span class="d-inline-block average-rating">35</span>
-											</div>
-											<div class="clinic-details">
-												<p class="doc-location"><i class="fas fa-map-marker-alt"></i> Newyork, USA</p>
-											</div>
-										</div>
-									</div>
-									<!-- Booking Doctor Info -->
-									
-									<div class="booking-summary">
-										<div class="booking-item-wrap">
-											<ul class="booking-date">
-												<li>Date <span>16 Nov 2019</span></li>
-												<li>Time <span>10:00 AM</span></li>
-											</ul>
-											<ul class="booking-fee">
-												<li>Consulting Fee <span>$100</span></li>
-												<li>Booking Fee <span>$10</span></li>
-												<li>Video Call <span>$50</span></li>
-											</ul>
-											<div class="booking-total">
-												<ul class="booking-total-list">
-													<li>
-														<span>Total</span>
-														<span class="total-cost">$160</span>
-													</li>
-												</ul>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-							<!-- /Booking Summary -->
-							
-						</div>
-					</div>
+</div>
 
-				</div>
-
-			</div>		
-			<!-- /Page Content -->
-   
-			<!-- Footer -->
-			<footer class="footer">
-				
-				<!-- Footer Top -->
-				<div class="footer-top">
-					<div class="container-fluid">
-						<div class="row">
-							<div class="col-lg-3 col-md-6">
-							
-								<!-- Footer Widget -->
-								<div class="footer-widget footer-about">
-									<div class="footer-logo">
-										<img src="{{ asset('front-end/assets/img/footer-logo.png') }}" alt="logo">
-									</div>
-									<div class="footer-about-content">
-										<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
-										<div class="social-icon">
-											<ul>
-												<li>
-													<a href="#" target="_blank"><i class="fab fa-facebook-f"></i> </a>
-												</li>
-												<li>
-													<a href="#" target="_blank"><i class="fab fa-twitter"></i> </a>
-												</li>
-												<li>
-													<a href="#" target="_blank"><i class="fab fa-linkedin-in"></i></a>
-												</li>
-												<li>
-													<a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
-												</li>
-												<li>
-													<a href="#" target="_blank"><i class="fab fa-dribbble"></i> </a>
-												</li>
-											</ul>
-										</div>
-									</div>
-								</div>
-								<!-- /Footer Widget -->
-								
-							</div>
-							
-							<div class="col-lg-3 col-md-6">
-							
-								<!-- Footer Widget -->
-								<div class="footer-widget footer-menu">
-									<h2 class="footer-title">For Patients</h2>
-									<ul>
-										<li><a href="search.html"><i class="fas fa-angle-double-right"></i> Search for Doctors</a></li>
-										<li><a href="login.html"><i class="fas fa-angle-double-right"></i> Login</a></li>
-										<li><a href="register.html"><i class="fas fa-angle-double-right"></i> Register</a></li>
-										<li><a href="booking.html"><i class="fas fa-angle-double-right"></i> Booking</a></li>
-										<li><a href="patient-dashboard.html"><i class="fas fa-angle-double-right"></i> Patient Dashboard</a></li>
-									</ul>
-								</div>
-								<!-- /Footer Widget -->
-								
-							</div>
-							
-							<div class="col-lg-3 col-md-6">
-							
-								<!-- Footer Widget -->
-								<div class="footer-widget footer-menu">
-									<h2 class="footer-title">For Doctors</h2>
-									<ul>
-										<li><a href="appointments.html"><i class="fas fa-angle-double-right"></i> Appointments</a></li>
-										<li><a href="chat.html"><i class="fas fa-angle-double-right"></i> Chat</a></li>
-										<li><a href="login.html"><i class="fas fa-angle-double-right"></i> Login</a></li>
-										<li><a href="doctor-register.html"><i class="fas fa-angle-double-right"></i> Register</a></li>
-										<li><a href="doctor-dashboard.html"><i class="fas fa-angle-double-right"></i> Doctor Dashboard</a></li>
-									</ul>
-								</div>
-								<!-- /Footer Widget -->
-								
-							</div>
-							
-							<div class="col-lg-3 col-md-6">
-							
-								<!-- Footer Widget -->
-								<div class="footer-widget footer-contact">
-									<h2 class="footer-title">Contact Us</h2>
-									<div class="footer-contact-info">
-										<div class="footer-address">
-											<span><i class="fas fa-map-marker-alt"></i></span>
-											<p> 3556  Beech Street, San Francisco,<br> California, CA 94108 </p>
-										</div>
-										<p>
-											<i class="fas fa-phone-alt"></i>
-											+1 315 369 5943
-										</p>
-										<p class="mb-0">
-											<i class="fas fa-envelope"></i>
-											doccure@example.com
-										</p>
-									</div>
-								</div>
-								<!-- /Footer Widget -->
-								
-							</div>
-							
-						</div>
-					</div>
-				</div>
-				<!-- /Footer Top -->
-				
-				<!-- Footer Bottom -->
-                <div class="footer-bottom">
-					<div class="container-fluid">
-					
-						<!-- Copyright -->
-						<div class="copyright">
-							<div class="row">
-								<div class="col-md-6 col-lg-6">
-									<div class="copyright-text">
-										<p class="mb-0"><a href="templateshub.net">Templates Hub</a></p>
-									</div>
-								</div>
-								<div class="col-md-6 col-lg-6">
-								
-									<!-- Copyright Menu -->
-									<div class="copyright-menu">
-										<ul class="policy-menu">
-											<li><a href="term-condition.html">Terms and Conditions</a></li>
-											<li><a href="privacy-policy.html">Policy</a></li>
-										</ul>
-									</div>
-									<!-- /Copyright Menu -->
-									
-								</div>
-							</div>
-						</div>
-						<!-- /Copyright -->
-						
-					</div>
-				</div>
-				<!-- /Footer Bottom -->
-				
-			</footer>
-			<!-- /Footer -->
-		   
-		</div>
-		<!-- /Main Wrapper -->
-	  
-		<!-- jQuery -->
-		<script src="{{ asset('front-end/assets/js/jquery.min.js') }}"></script>
-		
-		<!-- Bootstrap Core JS -->
-		<script src="{{ asset('front-end/assets/js/popper.min.js') }}"></script>
-		<script src="{{ asset('front-end/assets/js/bootstrap.min.js') }}"></script>
-		
-		<!-- Sticky Sidebar JS -->
-        <script src="{{ asset('front-end/assets/plugins/theia-sticky-sidebar/ResizeSensor.js') }}"></script>
-        <script src="{{ asset('front-end/assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.js') }}"></script>
-		
-		<!-- Custom JS -->
-		<script src="{{ asset('front-end/assets/js/script.js') }}"></script>
-		
-	</body>
-
-<!-- doccure/checkout.html  30 Nov 2019 04:12:16 GMT -->
+<script src="{{ asset('front-end/assets/js/jquery.min.js') }}"></script>
+<script src="{{ asset('front-end/assets/js/popper.min.js') }}"></script>
+<script src="{{ asset('front-end/assets/js/bootstrap.min.js') }}"></script>
+</body>
 </html>

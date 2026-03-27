@@ -48,7 +48,7 @@
                 <div class="col-md-12 col-12">
                     <nav aria-label="breadcrumb" class="page-breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="#">Home</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('doctor.dashboard') }}">Home</a></li>
                             <li class="breadcrumb-item active" aria-current="page">Profile Settings</li>
                         </ol>
                     </nav>
@@ -163,7 +163,7 @@
                                         <div class="form-group mb-0">
                                             <label>Date of Birth</label>
                                             <input type="date" class="form-control" name="date_of_birth"
-                                                value="{{ old('date_of_birth', $doctor->date_of_birth ?? '') }}">
+                                                value="{{ old('date_of_birth', optional($doctor->date_of_birth)->format('Y-m-d')) }}">
                                         </div>
                                     </div>
                                 </div>

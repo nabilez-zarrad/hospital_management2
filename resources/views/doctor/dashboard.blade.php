@@ -1,541 +1,73 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
-	
-<!-- doccure/doctor-dashboard.html  30 Nov 2019 04:12:03 GMT -->
 <head>
-		<meta charset="utf-8">
-		<title>Doccure</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
-		
-		<!-- Favicons -->
-		<link href={{ asset('front-end/assets/img/favicon.png') }}  rel="icon">
-		
-		<!-- Bootstrap CSS -->
-		<link rel="stylesheet" href={{ asset('front-end/assets/css/bootstrap.min.css') }} >
-		
-		<!-- Fontawesome CSS -->
-		<link rel="stylesheet" href={{ asset('front-end/assets/plugins/fontawesome/css/fontawesome.min.css') }} >
-		<link rel="stylesheet" href={{ asset('front-end/assets/plugins/fontawesome/css/all.min.css') }} >
-		
-		<!-- Main CSS -->
-		<link rel="stylesheet" href={{ asset('front-end/assets/css/style.css') }} >
-		
-		<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-		<!--[if lt IE 9]>
-			<script src="assets/js/html5shiv.min.js"></script>
-			<script src="assets/js/respond.min.js"></script>
-		<![endif]-->
-	
-	</head>
-	<body>
+    <meta charset="utf-8">
+    <title>Doctor Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+    <link href="{{ asset('front-end/assets/img/favicon.png') }}" rel="icon">
+    <link rel="stylesheet" href="{{ asset('front-end/assets/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('front-end/assets/plugins/fontawesome/css/all.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('front-end/assets/css/style.css') }}">
+</head>
+<body>
+<div class="main-wrapper">
+    @include('doctor.header')
 
-		<!-- Main Wrapper -->
-		<div class="main-wrapper">
-		
-			<!-- Header -->
-			@include('doctor.header')
-			<!-- /Header -->
-			
-			<!-- Breadcrumb -->
-			<div class="breadcrumb-bar">
-				<div class="container-fluid">
-					<div class="row align-items-center">
-						<div class="col-md-12 col-12">
-							<nav aria-label="breadcrumb" class="page-breadcrumb">
-								<ol class="breadcrumb">
-									<li class="breadcrumb-item"><a href="index-2.html">Home</a></li>
-									<li class="breadcrumb-item active" aria-current="page">Dashboard</li>
-								</ol>
-							</nav>
-							 <h2 class="breadcrumb-title">Hello Dr.{{-- {{ $doctor->name }}--}}</h2> 
-						</div>
-					</div>
-				</div>
-			</div>
-			<!-- /Breadcrumb -->
-			
-			<!-- Page Content -->
-			<div class="content">
-				<div class="container-fluid">
+    <div class="breadcrumb-bar">
+        <div class="container-fluid"><h2 class="breadcrumb-title">Hello Dr. {{ $doctor->full_name }}</h2></div>
+    </div>
 
-					<div class="row">
-						{{-- sidebar --}}
-						@include('doctor.sidbar')
-						{{-- /sidebar --}}
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                @include('doctor.sidbar')
+                <div class="col-md-7 col-lg-8 col-xl-9">
+                    <div class="row mb-4">
+                        <div class="col-md-4"><div class="card"><div class="card-body"><h6>Total Patients</h6><h3>{{ $patientsCount }}</h3></div></div></div>
+                        <div class="col-md-4"><div class="card"><div class="card-body"><h6>Today Appointments</h6><h3>{{ $todayAppointmentsCount }}</h3></div></div></div>
+                        <div class="col-md-4"><div class="card"><div class="card-body"><h6>Total Appointments</h6><h3>{{ $totalAppointmentsCount }}</h3></div></div></div>
+                    </div>
 
-						<div class="col-md-7 col-lg-8 col-xl-9">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Recent Appointments</h4>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>Patient</th>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                        <th>Status</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    @forelse($appointments as $appointment)
+                                        <tr>
+                                            <td>{{ $appointment->patient?->full_name ?? 'Patient profile in progress' }}</td>
+                                            <td>{{ $appointment->appointment_date?->format('Y-m-d') ?? 'Date will be confirmed' }}</td>
+                                            <td>{{ $appointment->appointment_time ? \Illuminate\Support\Carbon::parse($appointment->appointment_time)->format('H:i') : 'Time will be confirmed' }}</td>
+                                            <td>{{ ucfirst($appointment->status) }}</td>
+                                        </tr>
+                                    @empty
+                                        <tr><td colspan="4" class="text-center text-muted">No appointments found.</td></tr>
+                                    @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-							<div class="row">
-								<div class="col-md-12">
-									<div class="card dash-card">
-										<div class="card-body">
-											<div class="row">
-												<div class="col-md-12 col-lg-4">
-													<div class="dash-widget dct-border-rht">
-														<div class="circle-bar circle-bar1">
-															<div class="circle-graph1" data-percent="75">
-																<img src={{ asset('front-end/assets/img/icon-01.png') }}  class="img-fluid" alt="patient">
-															</div>
-														</div>
-														<div class="dash-widget-info">
-															<h6>Total Patient</h6>
-															<h3>1500</h3>
-															<p class="text-muted">Till Today</p>
-														</div>
-													</div>
-												</div>
-												
-												<div class="col-md-12 col-lg-4">
-													<div class="dash-widget dct-border-rht">
-														<div class="circle-bar circle-bar2">
-															<div class="circle-graph2" data-percent="65">
-																<img src={{ asset('front-end/assets/img/icon-02.png') }}  class="img-fluid" alt="Patient">
-															</div>
-														</div>
-														<div class="dash-widget-info">
-															<h6>Today Patient</h6>
-															<h3>160</h3>
-															<p class="text-muted">06, Nov 2019</p>
-														</div>
-													</div>
-												</div>
-												
-												<div class="col-md-12 col-lg-4">
-													<div class="dash-widget">
-														<div class="circle-bar circle-bar3">
-															<div class="circle-graph3" data-percent="50">
-																<img src={{ asset('front-end/assets/img/icon-03.png') }}  class="img-fluid" alt="Patient">
-															</div>
-														</div>
-														<div class="dash-widget-info">
-															<h6>Appoinments</h6>
-															<h3>85</h3>
-															<p class="text-muted">06, Apr 2019</p>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-							
-							<div class="row">
-								<div class="col-md-12">
-									<h4 class="mb-4">Patient Appoinment</h4>
-									<div class="appointment-tab">
-									
-										<!-- Appointment Tab -->
-										<ul class="nav nav-tabs nav-tabs-solid nav-tabs-rounded">
-											<li class="nav-item">
-												<a class="nav-link active" href="#upcoming-appointments" data-toggle="tab">Upcoming</a>
-											</li>
-											<li class="nav-item">
-												<a class="nav-link" href="#today-appointments" data-toggle="tab">Today</a>
-											</li> 
-										</ul>
-										<!-- /Appointment Tab -->
-										
-										<div class="tab-content">
-										
-											<!-- Upcoming Appointment Tab -->
-											<div class="tab-pane show active" id="upcoming-appointments">
-												<div class="card card-table mb-0">
-													<div class="card-body">
-														<div class="table-responsive">
-															<table class="table table-hover table-center mb-0">
-																<thead>
-																	<tr>
-																		<th>Patient Name</th>
-																		<th>Appt Date</th>
-																		<th>Purpose</th>
-																		<th>Type</th>
-																		<th class="text-center">Paid Amount</th>
-																		<th></th>
-																	</tr>
-																</thead>
-																<tbody>
-																	<tr>
-																		<td>
-																			<h2 class="table-avatar">
-																				<a href="patient-profile.html" class="avatar avatar-sm mr-2"><img class="avatar-img rounded-circle" src={{ asset('front-end/assets/img/patients/patient.jpg') }}  alt="User Image"></a>
-																				<a href="patient-profile.html">Richard Wilson <span>#PT0016</span></a>
-																			</h2>
-																		</td>
-																		<td>11 Nov 2019 <span class="d-block text-info">10.00 AM</span></td>
-																		<td>General</td>
-																		<td>New Patient</td>
-																		<td class="text-center">$150</td>
-																		<td class="text-right">
-																			<div class="table-action">
-																				<a href="javascript:void(0);" class="btn btn-sm bg-info-light">
-																					<i class="far fa-eye"></i> View
-																				</a>
-																				
-																				<a href="javascript:void(0);" class="btn btn-sm bg-success-light">
-																					<i class="fas fa-check"></i> Accept
-																				</a>
-																				<a href="javascript:void(0);" class="btn btn-sm bg-danger-light">
-																					<i class="fas fa-times"></i> Cancel
-																				</a>
-																			</div>
-																		</td>
-																	</tr>
-																	<tr>
-																		<td>
-																			<h2 class="table-avatar">
-																				<a href="patient-profile.html" class="avatar avatar-sm mr-2"><img class="avatar-img rounded-circle" src={{ asset('front-end/assets/img/patients/patient1.jpg') }}  alt="User Image"></a>
-																				<a href="patient-profile.html">Charlene Reed <span>#PT0001</span></a>
-																			</h2>
-																		</td>
-																		<td>3 Nov 2019 <span class="d-block text-info">11.00 AM</span></td>
-																		<td>General</td>
-																		<td>Old Patient</td>
-																		<td class="text-center">$200</td>
-																		<td class="text-right">
-																			<div class="table-action">
-																				<a href="javascript:void(0);" class="btn btn-sm bg-info-light">
-																					<i class="far fa-eye"></i> View
-																				</a>
-																				
-																				<a href="javascript:void(0);" class="btn btn-sm bg-success-light">
-																					<i class="fas fa-check"></i> Accept
-																				</a>
-																				<a href="javascript:void(0);" class="btn btn-sm bg-danger-light">
-																					<i class="fas fa-times"></i> Cancel
-																				</a>
-																			</div>
-																		</td>
-																	</tr>
-																	<tr>
-																		<td>
-																			<h2 class="table-avatar">
-																				<a href="patient-profile.html" class="avatar avatar-sm mr-2"><img class="avatar-img rounded-circle" src={{ asset('front-end/assets/img/patients/patient2.jpg') }}  alt="User Image"></a>
-																				<a href="patient-profile.html">Travis Trimble  <span>#PT0002</span></a>
-																			</h2>
-																		</td>
-																		<td>1 Nov 2019 <span class="d-block text-info">1.00 PM</span></td>
-																		<td>General</td>
-																		<td>New Patient</td>
-																		<td class="text-center">$75</td>
-																		<td class="text-right">
-																			<div class="table-action">
-																				<a href="javascript:void(0);" class="btn btn-sm bg-info-light">
-																					<i class="far fa-eye"></i> View
-																				</a>
-																				
-																				<a href="javascript:void(0);" class="btn btn-sm bg-success-light">
-																					<i class="fas fa-check"></i> Accept
-																				</a>
-																				<a href="javascript:void(0);" class="btn btn-sm bg-danger-light">
-																					<i class="fas fa-times"></i> Cancel
-																				</a>
-																			</div>
-																		</td>
-																	</tr>
-																	<tr>
-																		<td>
-																			<h2 class="table-avatar">
-																				<a href="patient-profile.html" class="avatar avatar-sm mr-2"><img class="avatar-img rounded-circle" src={{ asset('front-end/assets/img/patients/patient3.jpg') }}  alt="User Image"></a>
-																				<a href="patient-profile.html">Carl Kelly <span>#PT0003</span></a>
-																			</h2>
-																		</td>
-																		<td>30 Oct 2019 <span class="d-block text-info">9.00 AM</span></td>
-																		<td>General</td>
-																		<td>Old Patient</td>
-																		<td class="text-center">$100</td>
-																		<td class="text-right">
-																			<div class="table-action">
-																				<a href="javascript:void(0);" class="btn btn-sm bg-info-light">
-																					<i class="far fa-eye"></i> View
-																				</a>
-																				
-																				<a href="javascript:void(0);" class="btn btn-sm bg-success-light">
-																					<i class="fas fa-check"></i> Accept
-																				</a>
-																				<a href="javascript:void(0);" class="btn btn-sm bg-danger-light">
-																					<i class="fas fa-times"></i> Cancel
-																				</a>
-																			</div>
-																		</td>
-																	</tr>
-																	<tr>
-																		<td>
-																			<h2 class="table-avatar">
-																				<a href="patient-profile.html" class="avatar avatar-sm mr-2"><img class="avatar-img rounded-circle" src={{ asset('front-end/assets/img/patients/patient4.jpg') }}  alt="User Image"></a>
-																				<a href="patient-profile.html">Michelle Fairfax <span>#PT0004</span></a>
-																			</h2>
-																		</td>
-																		<td>28 Oct 2019 <span class="d-block text-info">6.00 PM</span></td>
-																		<td>General</td>
-																		<td>New Patient</td>
-																		<td class="text-center">$350</td>
-																		<td class="text-right">
-																			<div class="table-action">
-																				<a href="javascript:void(0);" class="btn btn-sm bg-info-light">
-																					<i class="far fa-eye"></i> View
-																				</a>
-																				
-																				<a href="javascript:void(0);" class="btn btn-sm bg-success-light">
-																					<i class="fas fa-check"></i> Accept
-																				</a>
-																				<a href="javascript:void(0);" class="btn btn-sm bg-danger-light">
-																					<i class="fas fa-times"></i> Cancel
-																				</a>
-																			</div>
-																		</td>
-																	</tr>
-																	<tr>
-																		<td>
-																			<h2 class="table-avatar">
-																				<a href="patient-profile.html" class="avatar avatar-sm mr-2"><img class="avatar-img rounded-circle" src={{ asset('front-end/assets/img/patients/patient5.jpg') }}  alt="User Image"></a>
-																				<a href="patient-profile.html">Gina Moore <span>#PT0005</span></a>
-																			</h2>
-																		</td>
-																		<td>27 Oct 2019 <span class="d-block text-info">8.00 AM</span></td>
-																		<td>General</td>
-																		<td>Old Patient</td>
-																		<td class="text-center">$250</td>
-																		<td class="text-right">
-																			<div class="table-action">
-																				<a href="javascript:void(0);" class="btn btn-sm bg-info-light">
-																					<i class="far fa-eye"></i> View
-																				</a>
-																				
-																				<a href="javascript:void(0);" class="btn btn-sm bg-success-light">
-																					<i class="fas fa-check"></i> Accept
-																				</a>
-																				<a href="javascript:void(0);" class="btn btn-sm bg-danger-light">
-																					<i class="fas fa-times"></i> Cancel
-																				</a>
-																			</div>
-																		</td>
-																	</tr>
-																</tbody>
-															</table>		
-														</div>
-													</div>
-												</div>
-											</div>
-											<!-- /Upcoming Appointment Tab -->
-									   
-											<!-- Today Appointment Tab -->
-											<div class="tab-pane" id="today-appointments">
-												<div class="card card-table mb-0">
-													<div class="card-body">
-														<div class="table-responsive">
-															<table class="table table-hover table-center mb-0">
-																<thead>
-																	<tr>
-																		<th>Patient Name</th>
-																		<th>Appt Date</th>
-																		<th>Purpose</th>
-																		<th>Type</th>
-																		<th class="text-center">Paid Amount</th>
-																		<th></th>
-																	</tr>
-																</thead>
-																<tbody>
-																	<tr>
-																		<td>
-																			<h2 class="table-avatar">
-																				<a href="patient-profile.html" class="avatar avatar-sm mr-2"><img class="avatar-img rounded-circle" src={{ asset('front-end/assets/img/patients/patient6.jpg') }}  alt="User Image"></a>
-																				<a href="patient-profile.html">Elsie Gilley <span>#PT0006</span></a>
-																			</h2>
-																		</td>
-																		<td>14 Nov 2019 <span class="d-block text-info">6.00 PM</span></td>
-																		<td>Fever</td>
-																		<td>Old Patient</td>
-																		<td class="text-center">$300</td>
-																		<td class="text-right">
-																			<div class="table-action">
-																				<a href="javascript:void(0);" class="btn btn-sm bg-info-light">
-																					<i class="far fa-eye"></i> View
-																				</a>
-																				
-																				<a href="javascript:void(0);" class="btn btn-sm bg-success-light">
-																					<i class="fas fa-check"></i> Accept
-																				</a>
-																				<a href="javascript:void(0);" class="btn btn-sm bg-danger-light">
-																					<i class="fas fa-times"></i> Cancel
-																				</a>
-																			</div>
-																		</td>
-																	</tr>
-																	<tr>
-																		<td>
-																			<h2 class="table-avatar">
-																				<a href="patient-profile.html" class="avatar avatar-sm mr-2"><img class="avatar-img rounded-circle" src={{ asset('front-end/assets/img/patients/patient7.jpg') }}  alt="User Image"></a>
-																				<a href="patient-profile.html">Joan Gardner <span>#PT0006</span></a>
-																			</h2>
-																		</td>
-																		<td>14 Nov 2019 <span class="d-block text-info">5.00 PM</span></td>
-																		<td>General</td>
-																		<td>Old Patient</td>
-																		<td class="text-center">$100</td>
-																		<td class="text-right">
-																			<div class="table-action">
-																				<a href="javascript:void(0);" class="btn btn-sm bg-info-light">
-																					<i class="far fa-eye"></i> View
-																				</a>
-																				
-																				<a href="javascript:void(0);" class="btn btn-sm bg-success-light">
-																					<i class="fas fa-check"></i> Accept
-																				</a>
-																				<a href="javascript:void(0);" class="btn btn-sm bg-danger-light">
-																					<i class="fas fa-times"></i> Cancel
-																				</a>
-																			</div>
-																		</td>
-																	</tr>
-																	<tr>
-																		<td>
-																			<h2 class="table-avatar">
-																				<a href="patient-profile.html" class="avatar avatar-sm mr-2"><img class="avatar-img rounded-circle" src={{ asset('front-end/assets/img/patients/patient8.jpg') }}  alt="User Image"></a>
-																				<a href="patient-profile.html">Daniel Griffing <span>#PT0007</span></a>
-																			</h2>
-																		</td>
-																		<td>14 Nov 2019 <span class="d-block text-info">3.00 PM</span></td>
-																		<td>General</td>
-																		<td>New Patient</td>
-																		<td class="text-center">$75</td>
-																		<td class="text-right">
-																			<div class="table-action">
-																				<a href="javascript:void(0);" class="btn btn-sm bg-info-light">
-																					<i class="far fa-eye"></i> View
-																				</a>
-																				
-																				<a href="javascript:void(0);" class="btn btn-sm bg-success-light">
-																					<i class="fas fa-check"></i> Accept
-																				</a>
-																				<a href="javascript:void(0);" class="btn btn-sm bg-danger-light">
-																					<i class="fas fa-times"></i> Cancel
-																				</a>
-																			</div>
-																		</td>
-																	</tr>
-																	<tr>
-																		<td>
-																			<h2 class="table-avatar">
-																				<a href="patient-profile.html" class="avatar avatar-sm mr-2"><img class="avatar-img rounded-circle" src={{ asset('front-end/assets/img/patients/patient9.jpg') }} alt="User Image"></a>
-																				<a href="patient-profile.html">Walter Roberson <span>#PT0008</span></a>
-																			</h2>
-																		</td>
-																		<td>14 Nov 2019 <span class="d-block text-info">1.00 PM</span></td>
-																		<td>General</td>
-																		<td>Old Patient</td>
-																		<td class="text-center">$350</td>
-																		<td class="text-right">
-																			<div class="table-action">
-																				<a href="javascript:void(0);" class="btn btn-sm bg-info-light">
-																					<i class="far fa-eye"></i> View
-																				</a>
-																				
-																				<a href="javascript:void(0);" class="btn btn-sm bg-success-light">
-																					<i class="fas fa-check"></i> Accept
-																				</a>
-																				<a href="javascript:void(0);" class="btn btn-sm bg-danger-light">
-																					<i class="fas fa-times"></i> Cancel
-																				</a>
-																			</div>
-																		</td>
-																	</tr>
-																	<tr>
-																		<td>
-																			<h2 class="table-avatar">
-																				<a href="patient-profile.html" class="avatar avatar-sm mr-2"><img class="avatar-img rounded-circle" src={{ asset('front-end/assets/img/patients/patient10.jpg') }}  alt="User Image"></a>
-																				<a href="patient-profile.html">Robert Rhodes <span>#PT0010</span></a>
-																			</h2>
-																		</td>
-																		<td>14 Nov 2019 <span class="d-block text-info">10.00 AM</span></td>
-																		<td>General</td>
-																		<td>New Patient</td>
-																		<td class="text-center">$175</td>
-																		<td class="text-right">
-																			<div class="table-action">
-																				<a href="javascript:void(0);" class="btn btn-sm bg-info-light">
-																					<i class="far fa-eye"></i> View
-																				</a>
-																				
-																				<a href="javascript:void(0);" class="btn btn-sm bg-success-light">
-																					<i class="fas fa-check"></i> Accept
-																				</a>
-																				<a href="javascript:void(0);" class="btn btn-sm bg-danger-light">
-																					<i class="fas fa-times"></i> Cancel
-																				</a>
-																			</div>
-																		</td>
-																	</tr>
-																	<tr>
-																		<td>
-																			<h2 class="table-avatar">
-																				<a href="patient-profile.html" class="avatar avatar-sm mr-2"><img class="avatar-img rounded-circle" src={{ asset('front-end/assets/img/patients/patient11.jpg') }}  alt="User Image"></a>
-																				<a href="patient-profile.html">Harry Williams <span>#PT0011</span></a>
-																			</h2>
-																		</td>
-																		<td>14 Nov 2019 <span class="d-block text-info">11.00 AM</span></td>
-																		<td>General</td>
-																		<td>New Patient</td>
-																		<td class="text-center">$450</td>
-																		<td class="text-right">
-																			<div class="table-action">
-																				<a href="javascript:void(0);" class="btn btn-sm bg-info-light">
-																					<i class="far fa-eye"></i> View
-																				</a>
-																				
-																				<a href="javascript:void(0);" class="btn btn-sm bg-success-light">
-																					<i class="fas fa-check"></i> Accept
-																				</a>
-																				<a href="javascript:void(0);" class="btn btn-sm bg-danger-light">
-																					<i class="fas fa-times"></i> Cancel
-																				</a>
-																			</div>
-																		</td>
-																	</tr>
-																</tbody>
-															</table>		
-														</div>	
-													</div>	
-												</div>	
-											</div>
-											<!-- /Today Appointment Tab -->
-											
-										</div>
-									</div>
-								</div>
-							</div>
-
-						</div>
-					</div>
-
-				</div>
-
-			</div>		
-			<!-- /Page Content -->
-   
-		
-		   
-		</div>
-		<!-- /Main Wrapper -->
-	  
-		<!-- jQuery -->
-		<script src={{ asset('front-end/assets/js/jquery.min.js') }} ></script>
-		
-		<!-- Bootstrap Core JS -->
-		<script src={{ asset('front-end/assets/js/popper.min.js') }} ></script>
-		<script src={{ asset('front-end/assets/js/bootstrap.min.js') }} ></script>
-		
-		<!-- Sticky Sidebar JS -->
-        <script src={{ asset('front-end/assets/plugins/theia-sticky-sidebar/ResizeSensor.js') }} ></script>
-        <script src={{ asset('front-end/assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.js') }} ></script>
-		
-		<!-- Circle Progress JS -->
-		<script src={{ asset('front-end/assets/js/circle-progress.min.js') }} ></script>
-		
-		<!-- Custom JS -->
-		<script src={{ asset('front-end/assets/js/script.js') }}></script>
-		
-	</body>
-
-<!-- doccure/doctor-dashboard.html  30 Nov 2019 04:12:09 GMT -->
+<script src="{{ asset('front-end/assets/js/jquery.min.js') }}"></script>
+<script src="{{ asset('front-end/assets/js/popper.min.js') }}"></script>
+<script src="{{ asset('front-end/assets/js/bootstrap.min.js') }}"></script>
+<script src="{{ asset('front-end/assets/plugins/theia-sticky-sidebar/ResizeSensor.js') }}"></script>
+<script src="{{ asset('front-end/assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.js') }}"></script>
+<script src="{{ asset('front-end/assets/js/script.js') }}"></script>
+</body>
 </html>

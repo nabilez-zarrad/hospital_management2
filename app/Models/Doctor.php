@@ -3,12 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
-use App\Models\Appointment;
 
 class Doctor extends Model
 {
-     protected $fillable = [
+    protected $fillable = [
         'user_id',
         'username',
         'email',
@@ -33,31 +31,52 @@ class Doctor extends Model
         'country',
         'postal_code',
         'section_id',
+        'specialty_id',
     ];
 
-    // relation مع user
+    protected $casts = [
+        'date_of_birth' => 'date',
+        'is_free' => 'boolean',
+        'price' => 'decimal:2',
+        'rating' => 'decimal:2',
+    ];
+
+    protected $appends = [
+        'full_name',
+        'profile_image_url',
+        'specialty_label',
+        'location_label',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // relation مع appointments
     public function appointments()
     {
         return $this->hasMany(Appointment::class);
     }
 
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
 
+    public function section()
+    {
+        return $this->belongsTo(Section::class);
+    }
 
-public function section()
-{
-    return $this->belongsTo(\App\Models\Section::class);
-}
-public function favouritedByPatients()
-{
-    return $this->belongsToMany(\App\Models\Patient::class, 'patient_favourites', 'doctor_id', 'patient_id');
-}
+    public function specialty()
+    {
+        return $this->belongsTo(Specialty::class);
+    }
 
+    public function favouritedByPatients()
+    {
+        return $this->belongsToMany(Patient::class, 'patient_favourites', 'doctor_id', 'patient_id');
+    }
 
     public function clinicImages()
     {
@@ -99,6 +118,32 @@ public function favouritedByPatients()
         return $this->hasMany(DoctorRegistration::class);
     }
 
+    public function getFullNameAttribute(): string
+    {
+        $fullName = trim(($this->first_name ?? '').' '.($this->last_name ?? ''));
 
-
+        return $fullName !== '' ? $fullName : 'Doctor';
     }
+
+    public function getProfileImageUrlAttribute(): string
+    {
+        return $this->image
+            ? asset('storage/'.$this->image)
+            : asset('front-end/assets/img/doctors/doctor-thumb-01.jpg');
+    }
+
+    public function getSpecialtyLabelAttribute(): string
+    {
+        return $this->speciality
+            ?? $this->specialty?->name
+            ?? $this->section?->name
+            ?? 'General Physician';
+    }
+
+    public function getLocationLabelAttribute(): string
+    {
+        $location = trim(($this->city ?? '').', '.($this->country ?? ''), ' ,');
+
+        return $location !== '' ? $location : 'Clinic location will be updated soon';
+    }
+}

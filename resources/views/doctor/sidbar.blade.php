@@ -5,13 +5,13 @@
 								<div class="widget-profile pro-widget-content">
 									<div class="profile-info-widget">
 										<a href="#" class="booking-doc-img">
-											<img src={{ asset('front-end/assets/img/doctors/doctor-thumb-02.jpg') }} alt="User Image">
+											<img src="{{ auth()->user()->doctor?->profile_image_url ?? asset('front-end/assets/img/doctors/doctor-thumb-02.jpg') }}" alt="User Image">
 										</a>
 										<div class="profile-det-info">
-											<h3>Dr.{{ auth()->user()->doctor->first_name ?? 'Doctor' }}</h3>
+											<h3>Dr. {{ auth()->user()->doctor?->full_name ?? 'Doctor' }}</h3>
 											
 											<div class="patient-details">
-												<h5 class="mb-0">BDS, MDS - Oral & Maxillofacial Surgery</h5>
+												<h5 class="mb-0">{{ auth()->user()->doctor?->specialty_label ?? 'General Physician' }}</h5>
 											</div>
 										</div>
 									</div>
@@ -61,18 +61,12 @@
 										
 											<br></br>
 											<li>
-												
 												<form method="POST" action="{{ route('logout') }}">
-														@csrf
-
-														<x-dropdown-link :href="route('logout')"
-														
-																onclick="event.preventDefault();
-																			this.closest('form').submit();">
-															<i class="fas fa-sign-out-alt"></i>
-															{{ __('Log Out') }}
-														</x-dropdown-link>
-												</form>     
+													@csrf
+													<button type="submit" class="btn btn-link p-0 text-left">
+														<i class="fas fa-sign-out-alt"></i> Log Out
+													</button>
+												</form>
 											</li>
 
 

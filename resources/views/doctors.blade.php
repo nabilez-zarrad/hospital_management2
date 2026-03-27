@@ -18,7 +18,7 @@ Find the best doctors and book an appointment
 
 <div class="row">
 
-@foreach($medecins as $medecin)
+@foreach($medecins ?? [] as $medecin)
 
 <div class="col-md-4 col-lg-3 col-sm-6">
 
@@ -27,7 +27,7 @@ Find the best doctors and book an appointment
 <div class="doc-img">
 
 <img class="img-fluid"
-src="{{ asset('front-end/assets/img/doctors/doctor-thumb-01.jpg') }}"
+src="{{ $medecin->image ? asset('storage/'.$medecin->image) : asset('front-end/assets/img/doctors/doctor-thumb-01.jpg') }}"
 alt="Doctor Image">
 
 </div>
@@ -36,13 +36,13 @@ alt="Doctor Image">
 
 <h3 class="title">
 
-{{ $medecin->name }}
+Dr. {{ $medecin->first_name }} {{ $medecin->last_name }}
 
 </h3>
 
 <p class="speciality">
 
-{{ $medecin->section->name }}
+{{ $medecin->section->name ?? $medecin->speciality ?? '—' }}
 
 </p>
 
@@ -57,9 +57,15 @@ alt="Doctor Image">
 
 <div class="col-6">
 
-<a href="#" class="btn book-btn">
-Book Now
-</a>
+@auth
+    @if(in_array(auth()->user()->role, ['patient', 'user'], true))
+        <a href="{{ route('patient.booking', $medecin->id) }}" class="btn book-btn">Book Now</a>
+    @else
+        <a href="{{ route('login') }}" class="btn book-btn">Book Now</a>
+    @endif
+@else
+    <a href="{{ route('login') }}" class="btn book-btn">Book Now</a>
+@endauth
 
 </div>
 

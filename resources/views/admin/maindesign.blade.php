@@ -147,7 +147,7 @@
 									<img src={{ asset('admin_end/assets/img/profiles/avatar-01.jpg') }}  alt="User Image" class="avatar-img rounded-circle">
 								</div>
 								<div class="user-text">
-									<h6>Ryan Taylor</h6>
+									<h6>{{ Auth::user()->name }}</h6>
 									<p class="text-muted mb-0">Administrator</p>
 								</div>
 							</div>
@@ -200,10 +200,13 @@
 							<li class="{{ request()->routeIs('admin.patients.*') ? 'active' : '' }}">
 								<a href="{{ route('admin.patients.index') }}"><i class="fe fe-user"></i> <span>Patients</span></a>
 							</li>
+							<li class="{{ request()->routeIs('admin.specialties.*') ? 'active' : '' }}">
+								<a href="{{ route('admin.specialties.index') }}"><i class="fe fe-tag"></i> <span>Specialties</span></a>
+							</li>
 							<li class="menu-title">
 								<span>Account</span>
 							</li>
-							<li>
+							<li class="{{ request()->routeIs('profile.*') ? 'active' : '' }}">
 								<a href="{{ route('profile.edit') }}"><i class="fe fe-user"></i> <span>Profile</span></a>
 							</li>
 							<li>

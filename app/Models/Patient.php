@@ -3,28 +3,47 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use App\Models\Rendezvous;
-use App\Models\Facture;
+use Illuminate\Database\Eloquent\Model;
 
-class Patient extends Authenticatable
+class Patient extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'user_id',
-        'email',
-        'password',
-        'date_birth',
+        'first_name',
+        'last_name',
         'phone',
-        'gender',
-        'blood_group'
+        'date_of_birth',
+        'city',
+        'country',
+        'image',
     ];
 
-    // public function rendezvous()
-    // {
-    //     return $this->hasMany(Rendezvous::class);
-    // }
+    protected $casts = [
+        'date_of_birth' => 'date',
+    ];
+
+    protected $appends = [
+        'full_name',
+        'profile_image_url',
+        'location_label',
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class);
+    }
+
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
 
     public function factures()
     {
@@ -32,11 +51,33 @@ class Patient extends Authenticatable
     }
 
     public function favourites()
-{
-    return $this->hasMany(\App\Models\PatientFavourite::class, 'patient_id');
-}
-public function favouriteDoctors()
-{
-    return $this->belongsToMany(\App\Models\Doctor::class, 'patient_favourites', 'patient_id', 'doctor_id');
-}
+    {
+        return $this->hasMany(PatientFavourite::class, 'patient_id');
+    }
+
+    public function favouriteDoctors()
+    {
+        return $this->belongsToMany(Doctor::class, 'patient_favourites', 'patient_id', 'doctor_id');
+    }
+
+    public function getFullNameAttribute(): string
+    {
+        $fullName = trim(($this->first_name ?? '').' '.($this->last_name ?? ''));
+
+        return $fullName !== '' ? $fullName : ($this->user?->name ?? 'Patient');
+    }
+
+    public function getProfileImageUrlAttribute(): string
+    {
+        return $this->image
+            ? asset('storage/'.$this->image)
+            : asset('front-end/assets/img/patients/patient.jpg');
+    }
+
+    public function getLocationLabelAttribute(): string
+    {
+        $location = trim(($this->city ?? '').', '.($this->country ?? ''), ' ,');
+
+        return $location !== '' ? $location : ($this->user?->address ?: 'Address will be updated soon');
+    }
 }

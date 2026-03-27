@@ -6,29 +6,21 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-   public function up(): void
-{
-    Schema::table('bookings', function (Blueprint $table) {
-        $table->foreignId('patient_id')->nullable()->constrained()->onDelete('cascade');
-    });
-}
+    public function up(): void
+    {
+        Schema::table('bookings', function (Blueprint $table) {
+            if (! Schema::hasColumn('bookings', 'patient_id')) {
+                $table->foreignId('patient_id')->nullable()->constrained()->cascadeOnDelete();
+            }
+        });
+    }
 
-
-
-   
-
-
-
-
-
-public function down(): void
-{
-    Schema::table('bookings', function (Blueprint $table) {
-        $table->dropForeign(['patient_id']);
-        $table->dropColumn('patient_id');
-    });
-}
+    public function down(): void
+    {
+        Schema::table('bookings', function (Blueprint $table) {
+            if (Schema::hasColumn('bookings', 'patient_id')) {
+                $table->dropConstrainedForeignId('patient_id');
+            }
+        });
+    }
 };

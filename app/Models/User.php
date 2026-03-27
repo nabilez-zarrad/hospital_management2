@@ -15,8 +15,10 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'mobile',
+        'address',
         'password',
-        'role' // ✅ مهم بزاف
+        'role',
     ];
 
     protected $hidden = [
@@ -42,5 +44,14 @@ class User extends Authenticatable
     public function patient()
     {
         return $this->hasOne(Patient::class);
+    }
+
+    public function getRoleDashboardRouteAttribute(): string
+    {
+        return match ($this->role) {
+            'admin' => route('admin.dashboard'),
+            'doctor' => route('doctor.dashboard'),
+            default => route('patient.dashboard'),
+        };
     }
 }

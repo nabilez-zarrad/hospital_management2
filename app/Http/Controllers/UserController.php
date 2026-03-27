@@ -2,114 +2,220 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Appointment;
 use App\Models\Doctor;
 use App\Models\Patient;
-use App\Models\Appointment;
-
 use App\Models\PatientFavourite;
-
-
-
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
     public function Dashboard()
     {
-        
-        // If you still have /dashboard route pointing here, keep it working without sections.
-        if (!Auth::check()) {
-            return redirect('/');
+        if (! Auth::check()) {
+            return redirect()->route('login');
         }
 
-        $user = Auth::user();
-
-        if ($user->role === 'admin') {
-            return redirect()->route('admin.dashboard');
-        }
-
-        if ($user->role === 'doctor') {
-            return redirect()->route('doctor.dashboard');
-        }
-         if ($user->role === 'patient') {
-            return redirect()->route('patient.dashboard');
-        }
-
-        // patient
-        return redirect('/');
+        return match (Auth::user()->role) {
+            'admin' => redirect()->route('admin.dashboard'),
+            'doctor' => redirect()->route('doctor.dashboard'),
+            default => redirect()->route('patient.dashboard'),
+        };
     }
-public function patientDashboard()
-{
-    return view('patient.dashboard');
-}
 
+    public function patientDashboard()
+    {
+        $patient = $this->resolvePatient();
+        if (! $patient) {
+            return redirect()->route('profile.edit')->with('error', 'Please complete your patient profile first.');
+        }
 
+        $appointments = Appointment::with(['doctor.section', 'doctor.specialty'])
+            ->where('patient_id', $patient->id)
+            ->latest('appointment_date')
+            ->latest('appointment_time')
+            ->take(10)
+            ->get();
+
+        return view('patient.dashboard', [
+            'patient' => $patient,
+            'appointments' => $appointments,
+            'favouritesCount' => $patient->favourites()->count(),
+        ]);
+    }
 
     public function Index()
     {
-        $doctors = Doctor::query()->latest()->take(8)->get();
+        $doctors = Doctor::with(['section', 'specialty'])->latest()->take(8)->get();
+
         return view('index', compact('doctors'));
     }
 
-    public function doctors()
+    public function doctors(Request $request)
     {
-        $doctors = Doctor::query()->latest()->get();
-        return view('doctors', compact('doctors'));
+        $doctors = $this->doctorQuery($request)->latest()->get();
+
+        return view('doctors', ['medecins' => $doctors]);
     }
 
-    public function doctorDetails($id)
+    public function searchDoctors(Request $request)
     {
-        $doctor = Doctor::findOrFail($id);
-        return view('doctor.details', compact('doctor'));
+        $doctors = $this->doctorQuery($request)->latest()->get();
+
+        return view('doctors', ['medecins' => $doctors]);
+    }
+
+    public function search(Request $request)
+    {
+        $doctors = $this->doctorQuery($request)->latest()->get();
+
+        return view('patient.searchDoctor', compact('doctors'));
+    }
+
+    public function booking($id)
+    {
+        $doctor = Doctor::with(['section', 'specialty'])->findOrFail($id);
+
+        return view('patient.booking', [
+            'doctor' => $doctor,
+            'selectedDate' => request('date', now()->toDateString()),
+            'selectedTime' => request('time', '09:00'),
+        ]);
+    }
+
+    public function checkout(Request $request)
+    {
+        $validated = $request->validate([
+            'doctor_id' => ['required', 'exists:doctors,id'],
+            'date' => ['required', 'date'],
+            'time' => ['required', 'date_format:H:i'],
+        ]);
+
+        $doctor = Doctor::findOrFail($validated['doctor_id']);
+        $patient = $this->resolvePatient();
+
+        if (! $patient) {
+            return redirect()->route('profile.edit')->with('error', 'Please complete your patient profile first.');
+        }
+
+        return view('patient.checkout', [
+            'doctor' => $doctor,
+            'patient' => $patient,
+            'date' => $validated['date'],
+            'time' => $validated['time'],
+        ]);
+    }
+
+    public function favourites()
+    {
+        $patient = $this->resolvePatient();
+        if (! $patient) {
+            return redirect()->route('profile.edit')->with('error', 'Patient profile not found.');
+        }
+
+        $favouriteDoctors = $patient->favouriteDoctors()
+            ->with(['section', 'specialty'])
+            ->latest('patient_favourites.created_at')
+            ->get();
+
+        return view('patient.favourites', compact('patient', 'favouriteDoctors'));
+    }
+
+    public function toggleFavourite($doctorId)
+    {
+        $patient = $this->resolvePatient();
+        if (! $patient) {
+            return back()->with('error', 'Patient profile not found.');
+        }
+
+        $doctor = Doctor::findOrFail($doctorId);
+
+        $exists = PatientFavourite::where('patient_id', $patient->id)
+            ->where('doctor_id', $doctor->id)
+            ->first();
+
+        if ($exists) {
+            $exists->delete();
+
+            return back()->with('success', 'Doctor removed from favourites.');
+        }
+
+        PatientFavourite::create([
+            'patient_id' => $patient->id,
+            'doctor_id' => $doctor->id,
+        ]);
+
+        return back()->with('success', 'Doctor added to favourites.');
     }
 
     public function bookAppointment(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'doctor_id' => ['required', 'exists:doctors,id'],
             'appointment_date' => ['required', 'date'],
-            'appointment_time' => ['required'],
+            'appointment_time' => ['required', 'date_format:H:i'],
         ]);
 
-        if (!Auth::check() || Auth::user()->role !== 'patient') {
-            return redirect()->route('login')->with('error', 'Only patients can book appointments.');
-        }
-
-        $patient = Patient::where('user_id', Auth::id())->first();
-        if (!$patient) {
+        $patient = $this->resolvePatient();
+        if (! $patient) {
             return back()->with('error', 'Patient profile not found.');
         }
 
+        $doctor = Doctor::findOrFail($validated['doctor_id']);
+        $consultingFee = $doctor->is_free ? 0 : (float) ($doctor->price ?? 0);
+        $bookingFee = 5;
+        $videoFee = 0;
+
         Appointment::create([
             'patient_id' => $patient->id,
-            'doctor_id' => $request->doctor_id,
-            'appointment_date' => $request->appointment_date,
-            'appointment_time' => $request->appointment_time,
-            'consulting_fee' => 0,
-            'booking_fee' => 0,
-            'video_fee' => 0,
-            'total' => 0,
+            'doctor_id' => $doctor->id,
+            'appointment_date' => $validated['appointment_date'],
+            'appointment_time' => $validated['appointment_time'],
+            'consulting_fee' => $consultingFee,
+            'booking_fee' => $bookingFee,
+            'video_fee' => $videoFee,
+            'total' => $consultingFee + $bookingFee + $videoFee,
             'status' => 'pending',
         ]);
 
-        return back()->with('success', 'Appointment booked successfully.');
+        return redirect()->route('my.appointments')->with('success', 'Appointment booked successfully.');
     }
 
     public function myAppointments()
     {
-        if (!Auth::check() || Auth::user()->role !== 'patient') {
-            return redirect()->route('login');
+        $patient = $this->resolvePatient();
+        if (! $patient) {
+            return redirect()->route('profile.edit')->with('error', 'Patient profile not found.');
         }
 
-        $patient = Patient::where('user_id', Auth::id())->first();
-        if (!$patient) {
-            return redirect('/')->with('error', 'Patient profile not found.');
-        }
+        // Backfill old bookings into appointments so legacy booked records appear here.
+        $patient->bookings()->with('doctor')->get()->each(function ($booking) use ($patient) {
+            $consultingFee = $booking->doctor?->is_free ? 0 : (float) ($booking->doctor?->price ?? 0);
+            $bookingFee = 5;
+            $videoFee = 0;
+
+            Appointment::firstOrCreate(
+                [
+                    'patient_id' => $patient->id,
+                    'doctor_id' => $booking->doctor_id,
+                    'appointment_date' => $booking->booking_date,
+                    'appointment_time' => $booking->booking_time,
+                ],
+                [
+                    'consulting_fee' => $consultingFee,
+                    'booking_fee' => $bookingFee,
+                    'video_fee' => $videoFee,
+                    'total' => $consultingFee + $bookingFee + $videoFee,
+                    'status' => 'pending',
+                ]
+            );
+        });
 
         $appointments = Appointment::with('doctor')
             ->where('patient_id', $patient->id)
-            ->latest()
+            ->latest('appointment_date')
+            ->latest('appointment_time')
             ->get();
 
         return view('my_appointments', compact('appointments'));
@@ -117,127 +223,93 @@ public function patientDashboard()
 
     public function cancelAppointment($id)
     {
-        if (!Auth::check() || Auth::user()->role !== 'patient') {
-            return redirect()->route('login');
-        }
-
-        $patient = Patient::where('user_id', Auth::id())->first();
-        if (!$patient) {
-            return redirect('/')->with('error', 'Patient profile not found.');
+        $patient = $this->resolvePatient();
+        if (! $patient) {
+            return redirect()->route('profile.edit')->with('error', 'Patient profile not found.');
         }
 
         $appointment = Appointment::where('patient_id', $patient->id)->findOrFail($id);
-        $appointment->status = 'cancelled';
-        $appointment->save();
+        $appointment->update(['status' => 'cancelled']);
 
         return back()->with('success', 'Appointment cancelled.');
     }
 
+    public function doctorProfile($id)
+    {
+        $doctor = Doctor::with([
+            'section',
+            'specialty',
+            'clinicImages',
+            'services',
+            'specializations',
+            'educations',
+            'experiences',
+            'awards',
+        ])->findOrFail($id);
 
+        $patient = $this->resolvePatient();
+        $isFavourite = false;
 
+        if ($patient) {
+            $isFavourite = PatientFavourite::where('patient_id', $patient->id)
+                ->where('doctor_id', $doctor->id)
+                ->exists();
+        }
 
-    public function search(Request $request)
-{
-    $query = Doctor::query();
-
-    // search بالاسم
-    if ($request->name) {
-        $query->where('name', 'like', '%' . $request->name . '%');
+        return view('patient.doctor-profile', compact('doctor', 'isFavourite'));
     }
 
-    // filter gender
-    if ($request->gender) {
-        $query->where('gender', $request->gender);
+    private function resolvePatient(): ?Patient
+    {
+        if (! Auth::check()) {
+            return null;
+        }
+
+        $user = Auth::user();
+
+        if (in_array($user->role, ['admin', 'doctor'], true)) {
+            return null;
+        }
+
+        return Patient::with('user')->firstOrCreate(
+            ['user_id' => $user->id],
+            [
+                'first_name' => (string) str($user->name)->before(' '),
+                'last_name' => (string) str($user->name)->after(' '),
+                'phone' => $user->mobile,
+            ]
+        );
     }
 
-    // filter speciality
-    if ($request->speciality) {
-        $query->where('speciality', $request->speciality);
+    private function doctorQuery(Request $request)
+    {
+        $query = Doctor::query()->with(['section', 'specialty']);
+
+        if ($request->filled('name') || $request->filled('search')) {
+            $raw = $request->input('name', $request->input('search'));
+            $term = '%' . trim((string) $raw) . '%';
+
+            $query->where(function ($q) use ($term) {
+                $q->where('first_name', 'like', $term)
+                    ->orWhere('last_name', 'like', $term)
+                    ->orWhere('speciality', 'like', $term);
+            });
+        }
+
+        if ($request->filled('gender')) {
+            $query->where('gender', (string) $request->string('gender'));
+        }
+
+        if ($request->filled('speciality')) {
+            $speciality = trim((string) $request->string('speciality'));
+            $query->where(function ($q) use ($speciality) {
+                $q->where('speciality', 'like', '%'.$speciality.'%')
+                    ->orWhereHas('specialty', function ($specialtyQuery) use ($speciality) {
+                        $specialtyQuery->where('name', 'like', '%'.$speciality.'%');
+                    });
+            });
+        }
+
+        return $query;
     }
-
-    $doctors = $query->latest()->get();
-
-    return view('patient.searchDoctor', compact('doctors'));
-}
-
-
-
-public function booking($id)
-{
-    $doctor = Doctor::findOrFail($id);
-    return view('patient.booking', compact('doctor'));
-}
-
-
-
-
-
-
-
-public function checkout(Request $request)
-{
-    $doctor = Doctor::findOrFail($request->doctor_id);
-    $date = $request->date ?? '';
-    $time = $request->time ?? '';
-
-    return view('patient.checkout', compact('doctor', 'date', 'time'));
-}
-
-
-
-public function favourites()
-{
-    $patient = Patient::where('user_id', Auth::id())->first();
-
-    if (!$patient) {
-        return redirect()->back()->with('error', 'Patient not found');
-    }
-
-    $favouriteDoctors = $patient->favouriteDoctors()->get();
-
-    return view('patient.favourites', compact('patient', 'favouriteDoctors'));
-}
-
-
-public function toggleFavourite($doctorId)
-{
-    $patient = \App\Models\Patient::where('user_id', Auth::id())->first();
-
-    if (!$patient) {
-        return redirect()->back()->with('error', 'Patient not found');
-    }
-
-    $exists = PatientFavourite::where('patient_id', $patient->id)
-        ->where('doctor_id', $doctorId)
-        ->first();
-
-    if ($exists) {
-        $exists->delete();
-        return redirect()->back()->with('success', 'Doctor removed from favourites');
-    }
-
-    PatientFavourite::create([
-        'patient_id' => $patient->id,
-        'doctor_id' => $doctorId,
-    ]);
-
-    return redirect()->back()->with('success', 'Doctor added to favourites');
-}
-
-public function doctorProfile($id)
-{
-    $doctor = \App\Models\Doctor::findOrFail($id);
-
-    $patient = \App\Models\Patient::where('user_id', \Illuminate\Support\Facades\Auth::id())->first();
-
-    $isFavourite = false;
-
-    if ($patient) {
-        $isFavourite = \App\Models\PatientFavourite::where('patient_id', $patient->id)
-            ->where('doctor_id', $doctor->id)
-            ->exists();
-    }
-
-    return view('patient.doctor-profile', compact('doctor', 'isFavourite'));
-}
 }
