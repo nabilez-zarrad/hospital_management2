@@ -62,10 +62,19 @@
                                         <a href="{{ route('doctor.profile', $doctor->id) }}">Dr. {{ $doctor->full_name }}</a>
                                     </h4>
                                     <p class="doc-speciality">{{ $doctor->specialty_label }}</p>
+                                                <div class="rating">
+													<i class="fas fa-star filled"></i>
+													<i class="fas fa-star filled"></i>
+													<i class="fas fa-star filled"></i>
+													<i class="fas fa-star filled"></i>
+													<i class="fas fa-star"></i>
+													<span class="d-inline-block average-rating">(35)</span>
+												</div>
                                     <p class="doc-location">
                                         <i class="fas fa-map-marker-alt"></i>
                                         {{ $doctor->location_label }}
                                     </p>
+                                    
                                 </div>
                             </div>
                             <div class="doc-info-right">
@@ -73,6 +82,7 @@
                                     <ul>
                                         <li><i class="far fa-comment"></i> {{ $doctor->total_reviews ?? 0 }} reviews</li>
                                         <li><i class="far fa-money-bill-alt"></i> {{ $doctor->is_free ? 'Free' : '$' . number_format((float) $doctor->price, 2) }}</li>
+                                        <li><i class="fas fa-map-marker-alt"></i>{{ $doctor->location_label }}</li>
                                     </ul>
                                 </div>
                                 <div class="clinic-booking">

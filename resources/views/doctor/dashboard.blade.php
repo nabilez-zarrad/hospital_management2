@@ -22,11 +22,74 @@
             <div class="row">
                 @include('doctor.sidbar')
                 <div class="col-md-7 col-lg-8 col-xl-9">
-                    <div class="row mb-4">
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card dash-card">
+            <div class="card-body">
+                <div class="row">
+
+                    <!-- Total Patients -->
+                    <div class="col-md-12 col-lg-4">
+                        <div class="dash-widget dct-border-rht">
+                            <div class="circle-bar circle-bar1">
+                                <div class="circle-graph1" data-percent="{{ $patientsCount > 0 ? 75 : 0 }}">
+                                    <img src="{{ asset('front-end/assets/img/icon-01.png') }}" class="img-fluid">
+                                </div>
+                            </div>
+                            <div class="dash-widget-info">
+                                <h6>Total Patient</h6>
+                                <h3>{{ $patientsCount }}</h3>
+                                <p class="text-muted">Till Today</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Today Appointments -->
+                    <div class="col-md-12 col-lg-4">
+                        <div class="dash-widget dct-border-rht">
+                            <div class="circle-bar circle-bar2">
+                                <div class="circle-graph2" data-percent="{{ $todayAppointmentsCount > 0 ? 65 : 0 }}">
+                                    <img src="{{ asset('front-end/assets/img/icon-02.png') }}" class="img-fluid">
+                                </div>
+                            </div>
+                            <div class="dash-widget-info">
+                                <h6>Today Appointments</h6>
+                                <h3>{{ $todayAppointmentsCount }}</h3>
+                                <p class="text-muted">{{ now()->format('d M Y') }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Appointments -->
+                    <div class="col-md-12 col-lg-4">
+                        <div class="dash-widget">
+                            <div class="circle-bar circle-bar3">
+                                <div class="circle-graph3" data-percent="{{ $totalAppointmentsCount > 0 ? 50 : 0 }}">
+                                    <img src="{{ asset('front-end/assets/img/icon-03.png') }}" class="img-fluid">
+                                </div>
+                            </div>
+                            <div class="dash-widget-info">
+                                <h6>Appointments</h6>
+                                <h3>{{ $totalAppointmentsCount }}</h3>
+                                <p class="text-muted">All Time</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+                    {{-- <div class="row mb-4">
                         <div class="col-md-4"><div class="card"><div class="card-body"><h6>Total Patients</h6><h3>{{ $patientsCount }}</h3></div></div></div>
                         <div class="col-md-4"><div class="card"><div class="card-body"><h6>Today Appointments</h6><h3>{{ $todayAppointmentsCount }}</h3></div></div></div>
                         <div class="col-md-4"><div class="card"><div class="card-body"><h6>Total Appointments</h6><h3>{{ $totalAppointmentsCount }}</h3></div></div></div>
-                    </div>
+                    </div> --}}
 
                     <div class="card">
                         <div class="card-body">
@@ -69,5 +132,30 @@
 <script src="{{ asset('front-end/assets/plugins/theia-sticky-sidebar/ResizeSensor.js') }}"></script>
 <script src="{{ asset('front-end/assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.js') }}"></script>
 <script src="{{ asset('front-end/assets/js/script.js') }}"></script>
+<script src="{{ asset('front-end/assets/js/circle-progress.min.js') }}"></script>
+<script>
+$(document).ready(function () {
+
+    $('.circle-graph1').circleProgress({
+        value: $('.circle-graph1').data('percent') / 100,
+        size: 80,
+        fill: { color: "#ff4d94" }
+    });
+
+    $('.circle-graph2').circleProgress({
+        value: $('.circle-graph2').data('percent') / 100,
+        size: 80,
+        fill: { color: "#28a745" }
+    });
+
+    $('.circle-graph3').circleProgress({
+        value: $('.circle-graph3').data('percent') / 100,
+        size: 80,
+        fill: { color: "#007bff" }
+    });
+
+});
+</script>
+
 </body>
 </html>

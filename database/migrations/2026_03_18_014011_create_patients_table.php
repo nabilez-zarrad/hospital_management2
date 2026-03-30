@@ -20,7 +20,6 @@ return new class extends Migration {
             $table->string('country')->nullable();
 
             $table->string('image')->nullable();
-
             $table->timestamps();
         });
     }

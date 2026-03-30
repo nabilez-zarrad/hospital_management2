@@ -51,6 +51,7 @@
                                 <ul>
                                     <li><i class="far fa-comment"></i> {{ $doctor->total_reviews ?? 0 }} Feedback</li>
                                     <li><i class="far fa-money-bill-alt"></i> {{ $doctor->is_free ? 'Free' : '$' . number_format((float) $doctor->price, 2) }}</li>
+                                    <li><i class="fas fa-map-marker-alt"></i>{{ $doctor->location_label }}</li>
                                 </ul>
                             </div>
                             @auth

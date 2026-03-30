@@ -23,7 +23,75 @@
                     <div class="card">
                         <div class="card-body">
                             <h4 class="card-title">Appointments</h4>
-                            <div class="table-responsive">
+
+
+
+
+
+
+                            <div class="appointments">
+
+    @forelse($appointments as $appointment)
+
+        <div class="appointment-list">
+            <div class="profile-info-widget">
+                <a href="#" class="booking-doc-img">
+                    <img src="assets/img/patients/patient.jpg" alt="User Image">
+                </a>
+
+                <div class="profile-det-info">
+                    <h3>
+                        {{ $appointment->patient?->full_name ?? 'Patient profile in progress' }}
+                    </h3>
+
+                    <div class="patient-details">
+                        <h5>
+                            <i class="far fa-clock"></i>
+                            {{ $appointment->appointment_date?->format('Y-m-d') ?? 'Date will be confirmed' }}
+                        </h5>
+                    </div>
+                </div>
+            </div>
+
+            <div class="appointment-action">
+
+                <!-- Accept -->
+                <form method="POST" action="{{ route('appointment.accept', $appointment->id) }}" class="d-inline">
+                    @csrf
+                    <button class="btn btn-sm bg-success-light">
+                        <i class="fas fa-check"></i> Accept
+                    </button>
+                </form>
+
+                <!-- Cancel -->
+                <form method="POST" action="{{ route('appointment.cancel', $appointment->id) }}" class="d-inline">
+                    @csrf
+                    <button class="btn btn-sm bg-danger-light">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </form>
+
+            </div>
+        </div>
+
+    @empty
+        <p class="text-center text-muted">ما كاين حتى appointment</p>
+    @endforelse
+
+</div>
+								<!-- /Appointment List -->
+
+
+
+
+
+
+
+
+
+
+
+                            {{-- <div class="table-responsive">
                                 <table class="table table-hover">
                                     <thead>
                                     <tr>
@@ -62,7 +130,7 @@
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
             </div>
