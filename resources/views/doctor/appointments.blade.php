@@ -32,27 +32,23 @@
                             <div class="appointments">
 
     @forelse($appointments as $appointment)
-
         <div class="appointment-list">
             <div class="profile-info-widget">
+
+                
                 <a href="#" class="booking-doc-img">
-                    <img src="assets/img/patients/patient.jpg" alt="User Image">
-                </a>
-
+                    <img src="{{ $appointment->patient?->image ? asset('storage/' . $appointment->patient->image)  : 'no image' }}"  alt="User Image">
+               </a>
                 <div class="profile-det-info">
-                    <h3>
-                        {{ $appointment->patient?->full_name ?? 'Patient profile in progress' }}
-                    </h3>
-
+                    <h3>{{ $appointment->patient?->full_name ?? 'Patient profile in progress' }}</h3>
                     <div class="patient-details">
-                        <h5>
-                            <i class="far fa-clock"></i>
-                            {{ $appointment->appointment_date?->format('Y-m-d') ?? 'Date will be confirmed' }}
-                        </h5>
+                        <h5><i class="far fa-clock"></i>  {{ $appointment->appointment_date?->format('Y-m-d') ?? 'Date will be confirmed' }}</h5>
+                        <h5><i class="fas fa-map-marker-alt"></i>  {{ $appointment->patient?->address ?? 'No address' }}</h5>
+                        <h5><i class="fas fa-envelope"></i> {{ $appointment->patient?->email ?? 'No email' }}</h5>
+                        <h5 class="mb-0"><i class="fas fa-phone"></i> {{ $appointment->patient?->phone ?? 'No phone' }}</h5>
                     </div>
                 </div>
             </div>
-
             <div class="appointment-action">
 
                 <!-- Accept -->
@@ -80,17 +76,6 @@
 
 </div>
 								<!-- /Appointment List -->
-
-
-
-
-
-
-
-
-
-
-
                             {{-- <div class="table-responsive">
                                 <table class="table table-hover">
                                     <thead>
