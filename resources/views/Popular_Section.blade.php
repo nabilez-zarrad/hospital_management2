@@ -19,7 +19,7 @@ Find the best doctors and make an appointment
 <div class="doc-img">
 
 <img class="img-fluid"
-src="{{ asset('front-end/assets/img/doctors/doctor-thumb-01.jpg') }}">
+src="{{ $doctor->profile_image_url }}" alt="{{ $doctor->full_name }}">
 
 </div>
 
@@ -27,13 +27,13 @@ src="{{ asset('front-end/assets/img/doctors/doctor-thumb-01.jpg') }}">
 
 <h3 class="title">
 
-{{ $doctor->first_name }} {{ $doctor->last_name }}
+{{ $doctor->full_name }}
 
 </h3>
 
 <p class="speciality">
 
-{{ optional($doctor->section)->name ?? 'General' }}
+{{ $doctor->specialty_label }}
 
 </p>
 
@@ -41,7 +41,7 @@ src="{{ asset('front-end/assets/img/doctors/doctor-thumb-01.jpg') }}">
 
 <div class="col-6">
 
-<a href="#" class="btn view-btn">
+<a href="{{ route('doctor.profile', $doctor->id) }}" class="btn view-btn">
 View Profile
 </a>
 
@@ -49,7 +49,7 @@ View Profile
 
 <div class="col-6">
 
-<a href="#" class="btn book-btn">
+<a href="{{ auth()->check() ? route('patient.booking', $doctor->id) : route('login') }}" class="btn book-btn">
 Book Now
 </a>
 

@@ -8,94 +8,63 @@
     <link rel="stylesheet" href="{{ asset('front-end/assets/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('front-end/assets/plugins/fontawesome/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('front-end/assets/css/style.css') }}">
+    @include('components.premium-dashboard-styles')
 </head>
 <body>
 <div class="main-wrapper">
     @include('doctor.header')
 
-    <div class="breadcrumb-bar">
-        <div class="container-fluid"><h2 class="breadcrumb-title">Hello Dr. {{ $doctor->full_name }}</h2></div>
-    </div>
-
     <div class="content">
         <div class="container-fluid">
+            <div class="premium-hero">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h2>Hello Dr. {{ $doctor->full_name }}</h2>
+                        <p>{{ $doctor->specialty_label }}</p>
+                    </div>
+                    <div class="col-md-4 text-md-right mt-3 mt-md-0">
+                        <a href="{{ route('doctor.appointments') }}" class="btn btn-light btn-sm mr-2">
+                            <i class="fas fa-calendar-check mr-1"></i>Appointments
+                        </a>
+                        <a href="{{ route('doctor.schedule_timings') }}" class="btn btn-outline-light btn-sm">
+                            <i class="fas fa-clock mr-1"></i>Schedule
+                        </a>
+                    </div>
+                </div>
+            </div>
+
             <div class="row">
                 @include('doctor.sidbar')
                 <div class="col-md-7 col-lg-8 col-xl-9">
-
-<div class="row">
-    <div class="col-md-12">
-        <div class="card dash-card">
-            <div class="card-body">
-                <div class="row">
-
-                    <!-- Total Patients -->
-                    <div class="col-md-12 col-lg-4">
-                        <div class="dash-widget dct-border-rht">
-                            <div class="circle-bar circle-bar1">
-                                <div class="circle-graph1" data-percent="{{ $patientsCount > 0 ? 75 : 0 }}">
-                                    <img src="{{ asset('front-end/assets/img/icon-01.png') }}" class="img-fluid">
+                    <div class="row">
+                        @foreach(($dashboardCards ?? []) as $card)
+                            <div class="col-md-6 col-xl-4 mb-4">
+                                <div class="premium-stat-card">
+                                    <div class="premium-stat-head">
+                                        <div>
+                                            <div class="premium-stat-title">{{ $card['title'] ?? '-' }}</div>
+                                            <p class="premium-stat-value">{{ $card['value'] ?? 0 }}</p>
+                                        </div>
+                                        <span class="premium-stat-icon" style="background: {{ $card['gradient'] ?? 'linear-gradient(135deg, #0ea5e9, #2563eb)' }};">
+                                            <i class="{{ $card['icon'] ?? 'fas fa-chart-line' }}"></i>
+                                        </span>
+                                    </div>
+                                    <p class="premium-stat-foot">{{ $card['meta'] ?? '' }}</p>
                                 </div>
                             </div>
-                            <div class="dash-widget-info">
-                                <h6>Total Patient</h6>
-                                <h3>{{ $patientsCount }}</h3>
-                                <p class="text-muted">Till Today</p>
-                            </div>
-                        </div>
+                        @endforeach
                     </div>
 
-                    <!-- Today Appointments -->
-                    <div class="col-md-12 col-lg-4">
-                        <div class="dash-widget dct-border-rht">
-                            <div class="circle-bar circle-bar2">
-                                <div class="circle-graph2" data-percent="{{ $todayAppointmentsCount > 0 ? 65 : 0 }}">
-                                    <img src="{{ asset('front-end/assets/img/icon-02.png') }}" class="img-fluid">
-                                </div>
-                            </div>
-                            <div class="dash-widget-info">
-                                <h6>Today Appointments</h6>
-                                <h3>{{ $todayAppointmentsCount }}</h3>
-                                <p class="text-muted">{{ now()->format('d M Y') }}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Total Appointments -->
-                    <div class="col-md-12 col-lg-4">
-                        <div class="dash-widget">
-                            <div class="circle-bar circle-bar3">
-                                <div class="circle-graph3" data-percent="{{ $totalAppointmentsCount > 0 ? 50 : 0 }}">
-                                    <img src="{{ asset('front-end/assets/img/icon-03.png') }}" class="img-fluid">
-                                </div>
-                            </div>
-                            <div class="dash-widget-info">
-                                <h6>Appointments</h6>
-                                <h3>{{ $totalAppointmentsCount }}</h3>
-                                <p class="text-muted">All Time</p>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
-                    {{-- <div class="row mb-4">
-                        <div class="col-md-4"><div class="card"><div class="card-body"><h6>Total Patients</h6><h3>{{ $patientsCount }}</h3></div></div></div>
-                        <div class="col-md-4"><div class="card"><div class="card-body"><h6>Today Appointments</h6><h3>{{ $todayAppointmentsCount }}</h3></div></div></div>
-                        <div class="col-md-4"><div class="card"><div class="card-body"><h6>Total Appointments</h6><h3>{{ $totalAppointmentsCount }}</h3></div></div></div>
-                    </div> --}}
-
-                    <div class="card">
-                        <div class="card-body">
+                    <div class="card premium-card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
                             <h4 class="card-title">Recent Appointments</h4>
-                            <div class="table-responsive">
-                                <table class="table table-hover">
+                            <a href="{{ route('doctor.appointments') }}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-eye mr-1"></i>View All
+                            </a>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive premium-table-wrap">
+                                <table class="table table-hover premium-table mb-0">
                                     <thead>
                                     <tr>
                                         <th>Patient</th>
@@ -107,10 +76,14 @@
                                     <tbody>
                                     @forelse($appointments as $appointment)
                                         <tr>
-                                            <td>{{ $appointment->patient?->full_name ?? 'Patient profile in progress' }}</td>
-                                            <td>{{ $appointment->appointment_date?->format('Y-m-d') ?? 'Date will be confirmed' }}</td>
-                                            <td>{{ $appointment->appointment_time ? \Illuminate\Support\Carbon::parse($appointment->appointment_time)->format('H:i') : 'Time will be confirmed' }}</td>
-                                            <td>{{ ucfirst($appointment->status) }}</td>
+                                            <td>{{ $appointment->patient?->full_name ?? '-' }}</td>
+                                            <td>{{ $appointment->appointment_date?->format('Y-m-d') ?? '-' }}</td>
+                                            <td>{{ $appointment->appointment_time ? \Illuminate\Support\Carbon::parse($appointment->appointment_time)->format('H:i') : '-' }}</td>
+                                            <td>
+                                                <span class="premium-badge {{ strtolower((string) $appointment->status) }}">
+                                                    {{ ucfirst((string) $appointment->status) }}
+                                                </span>
+                                            </td>
                                         </tr>
                                     @empty
                                         <tr><td colspan="4" class="text-center text-muted">No appointments found.</td></tr>
@@ -132,30 +105,5 @@
 <script src="{{ asset('front-end/assets/plugins/theia-sticky-sidebar/ResizeSensor.js') }}"></script>
 <script src="{{ asset('front-end/assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.js') }}"></script>
 <script src="{{ asset('front-end/assets/js/script.js') }}"></script>
-<script src="{{ asset('front-end/assets/js/circle-progress.min.js') }}"></script>
-<script>
-$(document).ready(function () {
-
-    $('.circle-graph1').circleProgress({
-        value: $('.circle-graph1').data('percent') / 100,
-        size: 80,
-        fill: { color: "#ff4d94" }
-    });
-
-    $('.circle-graph2').circleProgress({
-        value: $('.circle-graph2').data('percent') / 100,
-        size: 80,
-        fill: { color: "#28a745" }
-    });
-
-    $('.circle-graph3').circleProgress({
-        value: $('.circle-graph3').data('percent') / 100,
-        size: 80,
-        fill: { color: "#007bff" }
-    });
-
-});
-</script>
-
 </body>
 </html>

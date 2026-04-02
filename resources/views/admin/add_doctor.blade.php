@@ -81,7 +81,7 @@
                         <input type="file" name="image" class="form-control">
                     </div>
                 </div>
-                <button class="btn btn-primary" type="submit">Create Doctor</button>
+                <button class="btn btn-primary" type="submit"><i class="fa fa-plus mr-1"></i>Create Doctor</button>
             </form>
         </div>
     </div>

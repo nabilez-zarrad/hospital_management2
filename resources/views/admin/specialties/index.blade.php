@@ -16,7 +16,7 @@
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">All Specialties</h5>
-            <a href="{{ route('admin.specialties.create') }}" class="btn btn-primary">Add Specialty</a>
+            <a href="{{ route('admin.specialties.create') }}" class="btn btn-primary"><i class="fa fa-plus mr-1"></i>Add Specialty</a>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -40,11 +40,11 @@
                                     @endif
                                 </td>
                                 <td class="text-right">
-                                    <a href="{{ route('admin.specialties.edit', $specialty) }}" class="btn btn-sm btn-primary">Edit</a>
+                                    <a href="{{ route('admin.specialties.edit', $specialty) }}" class="btn btn-sm btn-primary"><i class="fa fa-pencil mr-1"></i>Edit</a>
                                     <form action="{{ route('admin.specialties.destroy', $specialty) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this specialty?');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                        <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fa fa-trash mr-1"></i>Delete</button>
                                     </form>
                                 </td>
                             </tr>

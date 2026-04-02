@@ -52,12 +52,12 @@
                                 <td><span class="badge badge-secondary">{{ $appt->status }}</span></td>
                                 <td>{{ number_format((float) $appt->total, 2) }}</td>
                                 <td class="text-right">
-                                    <a href="{{ route('admin.appointments.show', $appt) }}" class="btn btn-sm btn-light">View</a>
-                                    <a href="{{ route('admin.appointments.edit', $appt) }}" class="btn btn-sm btn-primary">Edit</a>
+                                    <a href="{{ route('admin.appointments.show', $appt) }}" class="btn btn-sm btn-light"><i class="fa fa-eye mr-1"></i>View</a>
+                                    <a href="{{ route('admin.appointments.edit', $appt) }}" class="btn btn-sm btn-primary"><i class="fa fa-pencil mr-1"></i>Edit</a>
                                     <form action="{{ route('admin.appointments.destroy', $appt) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this appointment?');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                        <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fa fa-trash mr-1"></i>Delete</button>
                                     </form>
                                 </td>
                             </tr>

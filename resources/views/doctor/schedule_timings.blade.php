@@ -22,6 +22,44 @@
 		
 		<!-- Main CSS -->
 		<link rel="stylesheet" href="{{ asset('front-end/assets/css/style.css') }}">
+		@include('components.premium-dashboard-styles')
+		<style>
+            .breadcrumb-bar {
+                display: none;
+            }
+
+            .schedule-widget {
+                border: 1px solid #e2e8f0;
+                border-radius: 12px;
+                overflow: hidden;
+            }
+
+            .schedule-nav .nav-link {
+                border-radius: 10px;
+                margin: 6px 4px;
+                color: #475569;
+                font-weight: 600;
+            }
+
+            .schedule-nav .nav-link.active {
+                background: linear-gradient(135deg, #0ea5e9, #2563eb);
+                color: #fff;
+            }
+
+            .doc-slot-list {
+                border: 1px solid #dbeafe;
+                border-radius: 10px;
+                background: #f8fbff;
+                color: #1e3a8a;
+                font-weight: 600;
+            }
+
+            .edit-link {
+                font-size: 13px;
+                font-weight: 700;
+                color: #2563eb;
+            }
+		</style>
 		
 		<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 		<!--[if lt IE 9]>
@@ -60,6 +98,17 @@
 			<!-- Page Content -->
 			<div class="content">
 				<div class="container-fluid">
+                    <div class="premium-hero">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap">
+                            <div class="mb-2 mb-md-0">
+                                <h2>Schedule Timings</h2>
+                                <p>Manage your weekly availability and appointment slots.</p>
+                            </div>
+                            <a href="#add_time_slot" data-toggle="modal" class="btn btn-light btn-sm">
+                                <i class="fas fa-plus-circle mr-1"></i>Add Slot
+                            </a>
+                        </div>
+                    </div>
 
 					<div class="row">
 						@include('doctor.sidbar')

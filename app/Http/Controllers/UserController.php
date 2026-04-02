@@ -6,6 +6,8 @@ use App\Models\Appointment;
 use App\Models\Doctor;
 use App\Models\Patient;
 use App\Models\PatientFavourite;
+use App\Models\Section;
+use App\Models\Specialty;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -38,18 +40,66 @@ class UserController extends Controller
             ->take(10)
             ->get();
 
+        $totalAppointmentsCount = $appointments->count();
+        $favouritesCount = $patient->favourites()->count();
+        $pendingCount = $appointments->where('status', 'pending')->count();
+        $completedCount = $appointments->where('status', 'completed')->count();
+
+        $dashboardCards = [
+            [
+                'title' => 'Total Appointments',
+                'value' => $totalAppointmentsCount,
+                'icon' => 'fas fa-calendar-alt',
+                'gradient' => 'linear-gradient(135deg, #0ea5e9, #2563eb)',
+                'meta' => null,
+            ],
+            [
+                'title' => 'Favourites',
+                'value' => $favouritesCount,
+                'icon' => 'fas fa-heart',
+                'gradient' => 'linear-gradient(135deg, #8b5cf6, #6d28d9)',
+                'meta' => null,
+            ],
+            [
+                'title' => 'Pending',
+                'value' => $pendingCount,
+                'icon' => 'fas fa-hourglass-half',
+                'gradient' => 'linear-gradient(135deg, #f59e0b, #ea580c)',
+                'meta' => null,
+            ],
+            [
+                'title' => 'Completed',
+                'value' => $completedCount,
+                'icon' => 'fas fa-check-circle',
+                'gradient' => 'linear-gradient(135deg, #10b981, #059669)',
+                'meta' => null,
+            ],
+        ];
+
         return view('patient.dashboard', [
             'patient' => $patient,
             'appointments' => $appointments,
-            'favouritesCount' => $patient->favourites()->count(),
+            'favouritesCount' => $favouritesCount,
+            'dashboardCards' => $dashboardCards,
         ]);
     }
 
     public function Index()
     {
         $doctors = Doctor::with(['section', 'specialty'])->latest()->take(8)->get();
+        $specialties = Specialty::query()
+            ->withCount('doctors')
+            ->orderByDesc('doctors_count')
+            ->take(12)
+            ->get();
 
-        return view('index', compact('doctors'));
+        $sections = Section::query()
+            ->withCount('doctors')
+            ->orderByDesc('doctors_count')
+            ->take(6)
+            ->get();
+
+        return view('index', compact('doctors', 'specialties', 'sections'));
     }
 
     public function doctors(Request $request)
@@ -307,6 +357,15 @@ class UserController extends Controller
                     ->orWhereHas('specialty', function ($specialtyQuery) use ($speciality) {
                         $specialtyQuery->where('name', 'like', '%'.$speciality.'%');
                     });
+            });
+        }
+
+        if ($request->filled('location')) {
+            $location = trim((string) $request->string('location'));
+            $query->where(function ($q) use ($location) {
+                $q->where('city', 'like', '%'.$location.'%')
+                    ->orWhere('state', 'like', '%'.$location.'%')
+                    ->orWhere('country', 'like', '%'.$location.'%');
             });
         }
 

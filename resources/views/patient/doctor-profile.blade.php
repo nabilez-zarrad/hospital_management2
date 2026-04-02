@@ -10,20 +10,123 @@
     <link rel="stylesheet" href="{{ asset('front-end/assets/plugins/fontawesome/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('front-end/assets/plugins/fancybox/jquery.fancybox.min.css') }}">
     <link rel="stylesheet" href="{{ asset('front-end/assets/css/style.css') }}">
+    @include('components.premium-dashboard-styles')
+    <style>
+        .profile-shell {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .profile-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08);
+            overflow: hidden;
+            background: #fff;
+        }
+
+        .profile-card .card-body {
+            padding: 16px;
+        }
+
+        .doctor-widget .doctor-img img {
+            width: 92px;
+            height: 92px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 1px solid #dbe3ef;
+        }
+
+        .doc-info-cont .doc-name {
+            font-size: 17px;
+            margin-bottom: 2px;
+            color: #0f172a;
+        }
+
+        .doc-info-cont .doc-speciality {
+            font-size: 14px;
+            margin-bottom: 6px;
+            color: #64748b;
+        }
+
+        .doc-info-cont .doc-location {
+            font-size: 13px;
+            margin-bottom: 8px;
+            color: #334155;
+        }
+
+        .clinic-services span {
+            font-size: 12px;
+            padding: 4px 8px;
+            border: 1px solid #dbe3ef;
+            border-radius: 8px;
+            background: #f8fbff;
+        }
+
+        .clini-infos ul li {
+            font-size: 13px;
+            margin-bottom: 7px;
+            color: #334155;
+        }
+
+        .clini-infos ul li i {
+            color: #2563eb;
+            margin-right: 6px;
+        }
+
+        .doc-info-right .btn,
+        .clinic-booking .apt-btn {
+            border-radius: 9px !important;
+            font-weight: 600;
+            padding: 8px 12px !important;
+            font-size: 13px;
+        }
+
+        .clinic-booking .apt-btn {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+            border: 0 !important;
+            color: #fff !important;
+        }
+
+        .profile-content h4 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .profile-content h5 {
+            font-size: 17px;
+            margin-top: 12px !important;
+            margin-bottom: 8px;
+        }
+
+        .profile-content p,
+        .profile-content li {
+            font-size: 13px;
+            color: #334155;
+        }
+    </style>
 </head>
 <body>
 <div class="main-wrapper">
     @include('patient.header')
 
-    <div class="breadcrumb-bar">
-        <div class="container-fluid">
-            <h2 class="breadcrumb-title">Doctor Profile</h2>
-        </div>
-    </div>
-
     <div class="content">
-        <div class="container">
-            <div class="card">
+        <div class="container-fluid profile-shell">
+            <div class="premium-hero mb-3">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h2>Doctor Profile</h2>
+                        <p>Professional details and booking information.</p>
+                    </div>
+                    <div class="col-md-4 text-md-right mt-3 mt-md-0">
+                        <a href="{{ route('patient.search') }}" class="btn btn-light btn-sm">
+                            <i class="fas fa-arrow-left mr-1"></i>Back To Search
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card profile-card">
                 <div class="card-body">
                     <div class="doctor-widget">
                         <div class="doc-info-left">
@@ -73,8 +176,8 @@
                 </div>
             </div>
 
-            <div class="card">
-                <div class="card-body">
+            <div class="card profile-card mt-3">
+                <div class="card-body profile-content">
                     <h4 class="mb-3">About</h4>
                     <p>{{ $doctor->biography ?: 'No biography added yet.' }}</p>
 

@@ -21,6 +21,82 @@
 		
 		<!-- Main CSS -->
         <link rel="stylesheet" href={{ asset('admin_end/assets/css/style.css') }} >
+		<style>
+			:root {
+				--admin-primary-start: #0b132b;
+				--admin-primary-mid: #1c2541;
+				--admin-primary-end: #3a506b;
+				--admin-card-shadow: 0 12px 25px rgba(15, 23, 42, 0.08);
+			}
+
+			.page-header {
+				border-radius: 16px;
+				background: linear-gradient(135deg, var(--admin-primary-start) 0%, var(--admin-primary-mid) 45%, var(--admin-primary-end) 100%);
+				color: #fff;
+				padding: 20px 24px;
+				margin-bottom: 18px;
+				box-shadow: 0 14px 28px rgba(11, 19, 43, 0.2);
+			}
+
+			.page-header .page-title {
+				color: #fff;
+				margin-bottom: 6px;
+			}
+
+			.page-header .breadcrumb {
+				background: transparent;
+				margin-bottom: 0;
+				padding: 0;
+			}
+
+			.page-header .breadcrumb-item a,
+			.page-header .breadcrumb-item.active,
+			.page-header .breadcrumb-item + .breadcrumb-item::before {
+				color: rgba(255, 255, 255, 0.84);
+			}
+
+			.card {
+				border: 0;
+				border-radius: 16px;
+				box-shadow: var(--admin-card-shadow);
+				overflow: hidden;
+			}
+
+			.card .card-header {
+				background: #f8fafc;
+				border-bottom: 1px solid #e2e8f0;
+			}
+
+			.table thead th {
+				border-top: 0;
+				background: #f8fafc;
+				color: #334155;
+				font-weight: 700;
+			}
+
+			.table td {
+				vertical-align: middle;
+			}
+
+			.btn {
+				border-radius: 9px;
+				font-weight: 600;
+				transition: transform 0.16s ease, box-shadow 0.16s ease;
+			}
+
+			.btn:hover {
+				transform: translateY(-1px);
+				box-shadow: 0 8px 18px rgba(15, 23, 42, 0.15);
+			}
+
+			.sidebar-menu > ul > li.active > a {
+				background: linear-gradient(135deg, #0ea5e9, #2563eb);
+				color: #fff !important;
+				border-radius: 10px;
+				margin: 4px 10px;
+				box-shadow: 0 8px 18px rgba(37, 99, 235, 0.3);
+			}
+		</style>
 		
 		
     </head>

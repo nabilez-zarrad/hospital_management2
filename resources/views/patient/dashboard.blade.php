@@ -9,39 +9,63 @@
     <link rel="stylesheet" href="{{ asset('front-end/assets/plugins/fontawesome/css/fontawesome.min.css') }}">
     <link rel="stylesheet" href="{{ asset('front-end/assets/plugins/fontawesome/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('front-end/assets/css/style.css') }}">
+    @include('components.premium-dashboard-styles')
 </head>
 <body>
 <div class="main-wrapper">
     @include('patient.header')
 
-    <div class="breadcrumb-bar">
-        <div class="container-fluid">
-            <h2 class="breadcrumb-title">Patient Dashboard</h2>
-        </div>
-    </div>
-
     <div class="content">
         <div class="container-fluid">
+            <div class="premium-hero">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h2>Patient Dashboard</h2>
+                        <p>{{ $patient?->full_name ?? auth()->user()->name }}</p>
+                    </div>
+                    <div class="col-md-4 text-md-right mt-3 mt-md-0">
+                        <a href="{{ route('patient.search') }}" class="btn btn-light btn-sm mr-2">
+                            <i class="fas fa-search mr-1"></i>Find Doctor
+                        </a>
+                        <a href="{{ route('my.appointments') }}" class="btn btn-outline-light btn-sm">
+                            <i class="fas fa-calendar-check mr-1"></i>Appointments
+                        </a>
+                    </div>
+                </div>
+            </div>
+
             <div class="row">
                 @include('patient.sidbar')
                 <div class="col-md-7 col-lg-8 col-xl-9">
-                    <div class="row mb-4">
-                        <div class="col-md-4">
-                            <div class="card"><div class="card-body"><h6>Total Appointments</h6><h3>{{ $appointments->count() }}</h3></div></div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="card"><div class="card-body"><h6>Favourites</h6><h3>{{ $favouritesCount ?? 0 }}</h3></div></div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="card"><div class="card-body"><h6>Pending</h6><h3>{{ $appointments->where('status', 'pending')->count() }}</h3></div></div>
-                        </div>
+                    <div class="row">
+                        @foreach(($dashboardCards ?? []) as $card)
+                            <div class="col-md-6 col-xl-3 mb-4">
+                                <div class="premium-stat-card">
+                                    <div class="premium-stat-head">
+                                        <div>
+                                            <div class="premium-stat-title">{{ $card['title'] ?? '-' }}</div>
+                                            <p class="premium-stat-value">{{ $card['value'] ?? 0 }}</p>
+                                        </div>
+                                        <span class="premium-stat-icon" style="background: {{ $card['gradient'] ?? 'linear-gradient(135deg, #0ea5e9, #2563eb)' }};">
+                                            <i class="{{ $card['icon'] ?? 'fas fa-chart-line' }}"></i>
+                                        </span>
+                                    </div>
+                                    <p class="premium-stat-foot">{{ $card['meta'] ?? '' }}</p>
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
 
-                    <div class="card">
-                        <div class="card-body">
+                    <div class="card premium-card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
                             <h4 class="card-title">Recent Appointments</h4>
-                            <div class="table-responsive">
-                                <table class="table table-hover table-center mb-0">
+                            <a href="{{ route('my.appointments') }}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-eye mr-1"></i>View All
+                            </a>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive premium-table-wrap">
+                                <table class="table table-hover table-center premium-table mb-0">
                                     <thead>
                                     <tr>
                                         <th>Doctor</th>
@@ -54,10 +78,14 @@
                                     <tbody>
                                     @forelse($appointments as $appointment)
                                         <tr>
-                                            <td>Dr. {{ $appointment->doctor?->full_name ?? 'Doctor profile in progress' }}</td>
-                                            <td>{{ $appointment->appointment_date?->format('Y-m-d') ?? 'Date will be confirmed' }}</td>
-                                            <td>{{ $appointment->appointment_time ? \Illuminate\Support\Carbon::parse($appointment->appointment_time)->format('H:i') : 'Time will be confirmed' }}</td>
-                                            <td>{{ ucfirst($appointment->status) }}</td>
+                                            <td>Dr. {{ $appointment->doctor?->full_name ?? '-' }}</td>
+                                            <td>{{ $appointment->appointment_date?->format('Y-m-d') ?? '-' }}</td>
+                                            <td>{{ $appointment->appointment_time ? \Illuminate\Support\Carbon::parse($appointment->appointment_time)->format('H:i') : '-' }}</td>
+                                            <td>
+                                                <span class="premium-badge {{ strtolower((string) $appointment->status) }}">
+                                                    {{ ucfirst((string) $appointment->status) }}
+                                                </span>
+                                            </td>
                                             <td>${{ number_format((float) $appointment->total, 2) }}</td>
                                         </tr>
                                     @empty

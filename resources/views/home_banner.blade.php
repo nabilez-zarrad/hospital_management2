@@ -9,13 +9,13 @@
                          
 						<!-- Search -->
 						<div class="search-box">
-							<form action="templateshub.net">
+							<form action="{{ route('search.doctors') }}" method="GET">
 								<div class="form-group search-location">
-									<input type="text" class="form-control" placeholder="Search Location">
+									<input type="text" name="location" class="form-control" placeholder="Search Location" value="{{ request('location') }}">
 									<span class="form-text">Based on your Location</span>
 								</div>
 								<div class="form-group search-info">
-									<input type="text" class="form-control" placeholder="Search Doctors, Clinics, Hospitals, Diseases Etc">
+									<input type="text" name="search" class="form-control" placeholder="Search Doctors, Clinics, Hospitals, Diseases Etc" value="{{ request('search') }}">
 									<span class="form-text">Ex : Dental or Sugar Check up etc</span>
 								</div>
 								<button type="submit" class="btn btn-primary search-btn"><i class="fas fa-search"></i> <span>Search</span></button>

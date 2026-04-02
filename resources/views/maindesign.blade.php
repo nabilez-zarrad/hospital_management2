@@ -45,13 +45,13 @@
 							</span>
 						</a>
 						<a href="index-2.html" class="navbar-brand logo">
-							<img src="front-end/assets/img/logo.png" class="img-fluid" alt="Logo">
+							<img src="{{ asset('front-end/assets/img/logo.png') }}" class="img-fluid" alt="Logo">
 						</a>
 					</div>
 					<div class="main-menu-wrapper">
 						<div class="menu-header">
-							<a href="index-2.html" class="menu-logo">
-								<img src="front-end/assets/img/logo.png" class="img-fluid" alt="Logo">
+							<a href="{{ route('index') }}" class="menu-logo">
+								<img src="{{ asset('front-end/assets/img/logo.png') }}" class="img-fluid" alt="Logo">
 							</a>
 							<a id="menu_close" class="menu-close" href="javascript:void(0);">
 								<i class="fas fa-times"></i>
@@ -59,42 +59,21 @@
 						</div>
 						<ul class="main-nav">
 							<li class="active">
-								<a href="index-2.html">Home</a>
-							</li>
-							<li class="has-submenu">
-								<a href="#">Doctors <i class="fas fa-chevron-down"></i></a>
-                                   
-							</li>	
-							<li class="has-submenu">
-								<a href="#">Patients <i class="fas fa-chevron-down"></i></a>
-                                
-							</li>	
-							<li class="has-submenu">
-								<a href="#">Pages <i class="fas fa-chevron-down"></i></a>
-                                    <ul class="submenu">
-                                        <li><a href="voice-call.html">Voice Call</a></li>
-                                        <li><a href="video-call.html">Video Call</a></li>
-                                        <li><a href="search.html">Search Doctors</a></li>
-                                        <li><a href="calendar.html">Calendar</a></li>
-                                        <li><a href="components.html">Components</a></li>
-                                        <li class="has-submenu">
-                                            <a href="invoices.html">Invoices</a>
-                                            <ul class="submenu">
-                                                <li><a href="invoices.html">Invoices</a></li>
-                                                <li><a href="invoice-view.html">Invoice View</a></li>
-                                            </ul>
-                                        </li>
-                                        <li><a href="blank-page.html">Starter Page</a></li>
-                                        <li><a href="login.html">Login</a></li>
-                                        <li><a href="register.html">Register</a></li>
-                                        <li><a href="forgot-password.html">Forgot Password</a></li>
-                                    </ul>
+								<a href="{{ route('index') }}">Home</a>
 							</li>
 							<li>
-								<a href="admin/index.html" target="_blank">Admin</a>
-							</li>
+								<a href="{{ route('doctors') }}">Doctors</a>
+							</li>	
+							<li>
+								<a href="{{ auth()->check() ? route('dashboard') : route('login') }}">Dashboard</a>
+							</li>	
+							@auth
+								@if(auth()->user()->role === 'admin')
+									<li><a href="{{ route('admin.dashboard') }}">Admin</a></li>
+								@endif
+							@endauth
 							<li class="login-link">
-								<a href="#">Login / Signup</a>
+								<a href="{{ route('login') }}">Login / Signup</a>
 							</li>
 						</ul>		 
 					</div>		 
@@ -143,7 +122,7 @@
 
 
 			<!-- Clinic and Specialities -->
-			@include('Clinic_and_Specialities', ['doctors' => $doctors ?? []])
+			@include('Clinic_and_Specialities', ['doctors' => $doctors ?? [], 'specialties' => $specialties ?? []])
 			<!-- Clinic and Specialities -->
 		  
 
@@ -210,11 +189,10 @@
 								<div class="footer-widget footer-menu">
 									<h2 class="footer-title">For Patients</h2>
 									<ul>
-										<li><a href="search.html"><i class="fas fa-angle-double-right"></i> Search for Doctors</a></li>
-										<li><a href="login.html"><i class="fas fa-angle-double-right"></i> Login</a></li>
-										<li><a href="register.html"><i class="fas fa-angle-double-right"></i> Register</a></li>
-										<li><a href="booking.html"><i class="fas fa-angle-double-right"></i> Booking</a></li>
-										<li><a href="patient-dashboard.html"><i class="fas fa-angle-double-right"></i> Patient Dashboard</a></li>
+										<li><a href="{{ route('doctors') }}"><i class="fas fa-angle-double-right"></i> Search for Doctors</a></li>
+										<li><a href="{{ route('login') }}"><i class="fas fa-angle-double-right"></i> Login</a></li>
+										<li><a href="{{ route('register') }}"><i class="fas fa-angle-double-right"></i> Register</a></li>
+										<li><a href="{{ auth()->check() ? route('dashboard') : route('login') }}"><i class="fas fa-angle-double-right"></i> Dashboard</a></li>
 									</ul>
 								</div>
 								<!-- /Footer Widget -->
@@ -227,11 +205,9 @@
 								<div class="footer-widget footer-menu">
 									<h2 class="footer-title">For Doctors</h2>
 									<ul>
-										<li><a href="appointments.html"><i class="fas fa-angle-double-right"></i> Appointments</a></li>
-										<li><a href="chat.html"><i class="fas fa-angle-double-right"></i> Chat</a></li>
-										<li><a href="login.html"><i class="fas fa-angle-double-right"></i> Login</a></li>
-										<li><a href="doctor-register.html"><i class="fas fa-angle-double-right"></i> Register</a></li>
-										<li><a href="doctor-dashboard.html"><i class="fas fa-angle-double-right"></i> Doctor Dashboard</a></li>
+										<li><a href="{{ route('doctors') }}"><i class="fas fa-angle-double-right"></i> Doctors Directory</a></li>
+										<li><a href="{{ route('login') }}"><i class="fas fa-angle-double-right"></i> Login</a></li>
+										<li><a href="{{ route('register') }}"><i class="fas fa-angle-double-right"></i> Register</a></li>
 									</ul>
 								</div>
 								<!-- /Footer Widget -->

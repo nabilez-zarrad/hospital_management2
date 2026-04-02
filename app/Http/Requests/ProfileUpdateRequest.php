@@ -30,6 +30,9 @@ class ProfileUpdateRequest extends FormRequest
             'date_of_birth' => ['nullable', 'date'],
             'city' => ['nullable', 'string', 'max:255'],
             'country' => ['nullable', 'string', 'max:255'],
+            'blood_type' => ['nullable', Rule::in(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'])],
+            'allergies' => ['nullable', 'string', 'max:1000'],
+            'medical_notes' => ['nullable', 'string', 'max:2000'],
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'password' => ['nullable', 'confirmed', Password::defaults()],
         ];

@@ -1,26 +1,83 @@
 @extends('layouts.patient')
 
 @section('content')
+    @include('components.premium-dashboard-styles')
     @include('patient.header')
 
-    <div class="breadcrumb-bar">
-        <div class="container-fluid">
-            <div class="row align-items-center">
-                <div class="col-md-12 col-12">
-                    <nav aria-label="breadcrumb" class="page-breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('patient.dashboard') }}">Home</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">Profile Settings</li>
-                        </ol>
-                    </nav>
-                    <h2 class="breadcrumb-title">Profile Settings</h2>
-                </div>
-            </div>
-        </div>
-    </div>
+    <style>
+        .settings-shell {
+            max-width: none;
+            margin: 0;
+        }
+
+        .settings-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08);
+            overflow: hidden;
+        }
+
+        .settings-card .card-body {
+            padding: 14px;
+        }
+
+        .settings-card .form-control {
+            height: 40px;
+            border-radius: 9px;
+            border-color: #dbe3ef;
+            font-size: 14px;
+        }
+
+        .settings-card textarea.form-control {
+            height: auto;
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .settings-card label {
+            font-size: 14px;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .settings-card .submit-btn {
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 8px 14px;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            border: 0;
+        }
+
+        .settings-card .submit-btn:hover {
+            background: linear-gradient(135deg, #1d4ed8, #1e40af);
+        }
+
+        .change-avatar .profile-img img {
+            width: 78px;
+            height: 78px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 1px solid #dbe3ef;
+        }
+    </style>
 
     <div class="content">
-        <div class="container-fluid">
+        <div class="container-fluid settings-shell">
+            <div class="premium-hero mb-3">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h2>Profile Settings</h2>
+                        <p>Update your personal details and account information.</p>
+                    </div>
+                    <div class="col-md-4 text-md-right mt-3 mt-md-0">
+                        <a href="{{ route('patient.dashboard') }}" class="btn btn-light btn-sm">
+                            <i class="fas fa-arrow-left mr-1"></i>Back To Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
             <div class="row">
                 @include('patient.sidbar')
 
@@ -39,7 +96,7 @@
                         </div>
                     @endif
 
-                    <div class="card">
+                    <div class="card settings-card">
                         <div class="card-body">
                             <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data">
                                 @csrf
@@ -102,6 +159,30 @@
                                         <div class="form-group">
                                             <label>Country</label>
                                             <input type="text" name="country" class="form-control" value="{{ old('country', $user->patient?->country) }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-3">
+                                        <div class="form-group">
+                                            <label>Blood Type</label>
+                                            @php($bloodType = old('blood_type', $user->patient?->blood_type))
+                                            <select name="blood_type" class="form-control">
+                                                <option value="">Select blood type</option>
+                                                @foreach(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] as $type)
+                                                    <option value="{{ $type }}" @selected($bloodType === $type)>{{ $type }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <div class="form-group">
+                                            <label>Allergies</label>
+                                            <textarea name="allergies" class="form-control" placeholder="e.g. Penicillin, peanuts">{{ old('allergies', $user->patient?->allergies) }}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <div class="form-group">
+                                            <label>Medical Notes</label>
+                                            <textarea name="medical_notes" class="form-control" placeholder="Any chronic conditions, surgeries, or important notes">{{ old('medical_notes', $user->patient?->medical_notes) }}</textarea>
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6">

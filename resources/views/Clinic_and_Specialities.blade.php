@@ -18,20 +18,26 @@ Discover our medical specialities
 
 <div class="specialities-slider slider">
 @php
-  $specialities = isset($doctors)
-    ? collect($doctors)->pluck('speciality')->filter()->unique()->take(12)
-    : collect();
+  $specialtyItems = collect($specialties ?? []);
 @endphp
 
-@foreach($specialities as $speciality)
+@forelse($specialtyItems as $specialty)
+  <div class="speicality-item text-center">
+    <div class="speicality-img">
+      <img src="{{ $specialty->image ? asset('storage/' . $specialty->image) : asset('front-end/assets/img/specialities/specialities-01.png') }}" class="img-fluid">
+      <span><i class="fa fa-circle"></i></span>
+    </div>
+    <p>{{ $specialty->name }}</p>
+  </div>
+@empty
   <div class="speicality-item text-center">
     <div class="speicality-img">
       <img src="{{ asset('front-end/assets/img/specialities/specialities-01.png') }}" class="img-fluid">
       <span><i class="fa fa-circle"></i></span>
     </div>
-    <p>{{ $speciality }}</p>
+    <p>General Medicine</p>
   </div>
-@endforeach
+@endforelse
 
 </div>
 

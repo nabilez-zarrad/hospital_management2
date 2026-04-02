@@ -35,8 +35,8 @@
                     @enderror
                 </div>
 
-                <button type="submit" class="btn btn-primary">Save</button>
-                <a href="{{ route('admin.specialties.index') }}" class="btn btn-light">Cancel</a>
+                <button type="submit" class="btn btn-primary"><i class="fa fa-check mr-1"></i>Save</button>
+                <a href="{{ route('admin.specialties.index') }}" class="btn btn-light"><i class="fa fa-times mr-1"></i>Cancel</a>
             </form>
         </div>
     </div>

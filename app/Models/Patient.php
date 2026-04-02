@@ -17,6 +17,9 @@ class Patient extends Model
         'date_of_birth',
         'city',
         'country',
+        'blood_type',
+        'allergies',
+        'medical_notes',
         'image',
     ];
 

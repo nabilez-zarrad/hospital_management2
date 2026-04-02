@@ -33,12 +33,38 @@ class DoctorController extends Controller
             ->take(10)
             ->get();
 
+        $patientsCount = Appointment::where('doctor_id', $doctor->id)->distinct('patient_id')->count('patient_id');
+        $todayAppointmentsCount = Appointment::where('doctor_id', $doctor->id)->whereDate('appointment_date', now())->count();
+        $totalAppointmentsCount = Appointment::where('doctor_id', $doctor->id)->count();
+
+        $dashboardCards = [
+            [
+                'title' => 'Total Patients',
+                'value' => $patientsCount,
+                'icon' => 'fas fa-user-injured',
+                'gradient' => 'linear-gradient(135deg, #10b981, #059669)',
+                'meta' => null,
+            ],
+            [
+                'title' => 'Today Appointments',
+                'value' => $todayAppointmentsCount,
+                'icon' => 'fas fa-calendar-day',
+                'gradient' => 'linear-gradient(135deg, #f59e0b, #ea580c)',
+                'meta' => now()->format('Y-m-d'),
+            ],
+            [
+                'title' => 'Total Appointments',
+                'value' => $totalAppointmentsCount,
+                'icon' => 'fas fa-notes-medical',
+                'gradient' => 'linear-gradient(135deg, #0ea5e9, #2563eb)',
+                'meta' => null,
+            ],
+        ];
+
         return view('doctor.dashboard', [
             'doctor' => $doctor,
             'appointments' => $appointments,
-            'patientsCount' => Appointment::where('doctor_id', $doctor->id)->distinct('patient_id')->count('patient_id'),
-            'todayAppointmentsCount' => Appointment::where('doctor_id', $doctor->id)->whereDate('appointment_date', now())->count(),
-            'totalAppointmentsCount' => Appointment::where('doctor_id', $doctor->id)->count(),
+            'dashboardCards' => $dashboardCards,
         ]);
     }
 

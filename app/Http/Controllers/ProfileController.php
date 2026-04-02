@@ -76,6 +76,9 @@ class ProfileController extends Controller
                     'date_of_birth' => $request->input('date_of_birth'),
                     'city' => $request->input('city'),
                     'country' => $request->input('country'),
+                    'blood_type' => $request->input('blood_type'),
+                    'allergies' => $request->input('allergies'),
+                    'medical_notes' => $request->input('medical_notes'),
                     'image' => $imagePath ?: $user->patient?->image,
                 ]
             );

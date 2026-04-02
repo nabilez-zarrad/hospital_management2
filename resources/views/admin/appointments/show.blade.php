@@ -12,11 +12,11 @@
                 </ul>
             </div>
             <div class="col-auto">
-                <a href="{{ route('admin.appointments.edit', $appointment) }}" class="btn btn-primary">Edit</a>
+                <a href="{{ route('admin.appointments.edit', $appointment) }}" class="btn btn-primary"><i class="fa fa-pencil mr-1"></i>Edit</a>
                 <form action="{{ route('admin.appointments.destroy', $appointment) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this appointment?');">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="btn btn-danger">Delete</button>
+                    <button type="submit" class="btn btn-danger"><i class="fa fa-trash mr-1"></i>Delete</button>
                 </form>
             </div>
         </div>

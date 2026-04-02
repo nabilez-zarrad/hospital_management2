@@ -8,114 +8,181 @@
     <link rel="stylesheet" href="{{ asset('front-end/assets/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('front-end/assets/plugins/fontawesome/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('front-end/assets/css/style.css') }}">
+    @include('components.premium-dashboard-styles')
+    <style>
+        .appointments-shell {
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            background: #fff;
+            overflow: hidden;
+        }
+
+        .appointment-item {
+            padding: 16px;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .appointment-item:last-child {
+            border-bottom: 0;
+        }
+
+        .appointment-patient {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .appointment-patient img {
+            width: 66px;
+            height: 66px;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 1px solid #dbe5f2;
+        }
+
+        .appointment-patient h5 {
+            font-size: 18px;
+            margin-bottom: 5px;
+            color: #0f172a;
+        }
+
+        .appointment-date {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 3px;
+        }
+
+        .appointment-meta {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .appointment-meta li {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 4px;
+        }
+
+        .appointment-meta i {
+            width: 16px;
+            color: #475569;
+            margin-right: 4px;
+        }
+
+        .appointment-action {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .appointment-action .btn {
+            border-radius: 9px;
+            font-size: 12px;
+            font-weight: 700;
+            border: 0;
+            padding: 8px 12px;
+        }
+
+        .appointment-action .btn-success {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .appointment-action .btn-danger {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        @media (max-width: 767px) {
+            .appointment-action {
+                justify-content: flex-start;
+                margin-top: 10px;
+            }
+        }
+    </style>
 </head>
 <body>
 <div class="main-wrapper">
     @include('doctor.header')
+
     <div class="content">
         <div class="container-fluid">
             <div class="row">
                 @include('doctor.sidbar')
+
                 <div class="col-md-7 col-lg-8 col-xl-9">
-                    @if(session('success'))
-                        <div class="alert alert-success">{{ session('success') }}</div>
-                    @endif
-                    <div class="card">
-                        <div class="card-body">
-                            <h4 class="card-title">Appointments</h4>
-
-
-
-
-
-
-                            <div class="appointments">
-
-    @forelse($appointments as $appointment)
-        <div class="appointment-list">
-            <div class="profile-info-widget">
-
-                
-                <a href="#" class="booking-doc-img">
-                    <img src="{{ $appointment->patient?->image ? asset('storage/' . $appointment->patient->image)  : 'no image' }}"  alt="User Image">
-               </a>
-                <div class="profile-det-info">
-                    <h3>{{ $appointment->patient?->full_name ?? 'Patient profile in progress' }}</h3>
-                    <div class="patient-details">
-                        <h5><i class="far fa-clock"></i>  {{ $appointment->appointment_date?->format('Y-m-d') ?? 'Date will be confirmed' }}</h5>
-                        <h5><i class="fas fa-map-marker-alt"></i>  {{ $appointment->patient?->address ?? 'No address' }}</h5>
-                        <h5><i class="fas fa-envelope"></i> {{ $appointment->patient?->email ?? 'No email' }}</h5>
-                        <h5 class="mb-0"><i class="fas fa-phone"></i> {{ $appointment->patient?->phone ?? 'No phone' }}</h5>
+                    <div class="premium-hero d-flex align-items-center justify-content-between flex-wrap">
+                        <div class="mb-2 mb-md-0">
+                            <h2>Appointments</h2>
+                            <p>Manage incoming patient bookings quickly and clearly.</p>
+                        </div>
+                        <span class="badge badge-light px-3 py-2" style="border-radius:999px;font-weight:700;">
+                            {{ $appointments->count() }} Total
+                        </span>
                     </div>
-                </div>
-            </div>
-            <div class="appointment-action">
 
-                <!-- Accept -->
-                <form method="POST" action="{{ route('appointment.accept', $appointment->id) }}" class="d-inline">
-                    @csrf
-                    <button class="btn btn-sm bg-success-light">
-                        <i class="fas fa-check"></i> Accept
-                    </button>
-                </form>
+                    @if(session('success'))
+                        <div class="alert alert-success border-0" style="border-radius:12px;">
+                            {{ session('success') }}
+                        </div>
+                    @endif
 
-                <!-- Cancel -->
-                <form method="POST" action="{{ route('appointment.cancel', $appointment->id) }}" class="d-inline">
-                    @csrf
-                    <button class="btn btn-sm bg-danger-light">
-                        <i class="fas fa-times"></i> Cancel
-                    </button>
-                </form>
-
-            </div>
-        </div>
-
-    @empty
-        <p class="text-center text-muted">ما كاين حتى appointment</p>
-    @endforelse
-
-</div>
-								<!-- /Appointment List -->
-                            {{-- <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
-                                    <tr>
-                                        <th>Patient</th>
-                                        <th>Date</th>
-                                        <th>Time</th>
-                                        <th>Status</th>
-                                        <th>Action</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    @forelse($appointments as $appointment)
-                                        <tr>
-                                            <td>{{ $appointment->patient?->full_name ?? 'Patient profile in progress' }}</td>
-                                            <td>{{ $appointment->appointment_date?->format('Y-m-d') ?? 'Date will be confirmed' }}</td>
-                                            <td>{{ $appointment->appointment_time ? \Illuminate\Support\Carbon::parse($appointment->appointment_time)->format('H:i') : 'Time will be confirmed' }}</td>
-                                            <td>{{ ucfirst($appointment->status) }}</td>
-                                            <td>
-                                                @if($appointment->status === 'pending')
-                                                    <form class="d-inline" method="POST" action="{{ route('appointment.accept', $appointment->id) }}">
+                    <div class="card premium-card">
+                        <div class="card-header">
+                            <h4 class="card-title mb-0">Appointments List</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="appointments-shell">
+                                @forelse($appointments as $appointment)
+                                    <div class="appointment-item">
+                                        <div class="row align-items-center">
+                                            <div class="col-lg-8">
+                                                <div class="appointment-patient">
+                                                    <img src="{{ $appointment->patient?->image ? asset('storage/' . $appointment->patient->image) : asset('front-end/assets/img/patients/patient.jpg') }}" alt="Patient">
+                                                    <div>
+                                                        <h5 class="mb-0">{{ $appointment->patient?->full_name ?? 'Patient profile in progress' }}</h5>
+                                                        <div class="appointment-date">
+                                                            {{ $appointment->appointment_date?->format('Y-m-d') ?? 'Date will be confirmed' }}
+                                                            @if($appointment->appointment_time)
+                                                                at {{ \Illuminate\Support\Carbon::parse($appointment->appointment_time)->format('H:i') }}
+                                                            @endif
+                                                        </div>
+                                                        <ul class="appointment-meta mt-2">
+                                                            <li><i class="fas fa-map-marker-alt"></i>{{ $appointment->patient?->address ?? 'No address' }}</li>
+                                                            <li><i class="fas fa-envelope"></i>{{ $appointment->patient?->email ?? 'No email' }}</li>
+                                                            <li><i class="fas fa-phone"></i>{{ $appointment->patient?->phone ?? 'No phone' }}</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <div class="appointment-action">
+                                                    <form method="POST" action="{{ route('appointment.accept', $appointment->id) }}" class="d-inline">
                                                         @csrf
-                                                        <button class="btn btn-sm btn-success" type="submit">Accept</button>
+                                                        <button class="btn btn-success" type="submit">
+                                                            <i class="fas fa-check mr-1"></i>Accept
+                                                        </button>
                                                     </form>
-                                                    <form class="d-inline" method="POST" action="{{ route('appointment.reject', $appointment->id) }}">
+
+                                                    <form method="POST" action="{{ route('appointment.cancel', $appointment->id) }}" class="d-inline">
                                                         @csrf
-                                                        <button class="btn btn-sm btn-danger" type="submit">Reject</button>
+                                                        <button class="btn btn-danger" type="submit">
+                                                            <i class="fas fa-times mr-1"></i>Cancel
+                                                        </button>
                                                     </form>
-                                                @else
-                                                    <span class="text-muted">No actions</span>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr><td colspan="5" class="text-center text-muted">No appointments found.</td></tr>
-                                    @endforelse
-                                    </tbody>
-                                </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @empty
+                                    <div class="appointment-item text-center text-muted py-4">
+                                        No appointments found.
+                                    </div>
+                                @endforelse
                             </div>
-                        </div> --}}
+                        </div>
                     </div>
                 </div>
             </div>

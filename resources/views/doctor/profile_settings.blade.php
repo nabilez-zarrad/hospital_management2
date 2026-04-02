@@ -27,6 +27,32 @@
 		
 		<!-- Main CSS -->
 		<link rel="stylesheet" href="{{ asset('front-end/assets/css/style.css') }}">
+        @include('components.premium-dashboard-styles')
+        <style>
+            .breadcrumb-bar {
+                display: none;
+            }
+
+            .profile-settings-card {
+                border-radius: 14px;
+                border: 1px solid #e2e8f0;
+                box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+            }
+
+            .change-avatar .profile-img img {
+                border-radius: 12px;
+                border: 1px solid #dbe5f2;
+            }
+
+            .submit-btn-bottom .submit-btn {
+                border-radius: 10px;
+                padding: 10px 18px;
+                font-weight: 700;
+                border: 0;
+                background: linear-gradient(135deg, #2563eb, #1d4ed8);
+                box-shadow: 0 12px 24px rgba(37, 99, 235, 0.24);
+            }
+        </style>
 		
 		<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 		<!--[if lt IE 9]>
@@ -60,6 +86,18 @@
 
     <div class="content">
         <div class="container-fluid">
+            <div class="premium-hero">
+                <div class="d-flex align-items-center justify-content-between flex-wrap">
+                    <div class="mb-2 mb-md-0">
+                        <h2>Profile Settings</h2>
+                        <p>Update your professional information, clinic details and credentials.</p>
+                    </div>
+                    <a href="{{ route('doctor.dashboard') }}" class="btn btn-light btn-sm">
+                        <i class="fas fa-arrow-left mr-1"></i>Back To Dashboard
+                    </a>
+                </div>
+            </div>
+
             <div class="row">
 
                 @include('doctor.sidbar')
@@ -85,7 +123,7 @@
                     <form action="{{ route('doctor.profile.settings.update') }}" method="POST" enctype="multipart/form-data">
                         @csrf
 
-                        <div class="card">
+                        <div class="card profile-settings-card">
                             <div class="card-body">
                                 <h4 class="card-title">Basic Information</h4>
                                 <div class="row form-row">
@@ -170,7 +208,7 @@
                             </div>
                         </div>
 
-                        <div class="card">
+                        <div class="card profile-settings-card">
                             <div class="card-body">
                                 <h4 class="card-title">About Me</h4>
                                 <div class="form-group mb-0">
@@ -180,7 +218,7 @@
                             </div>
                         </div>
 
-                        <div class="card">
+                        <div class="card profile-settings-card">
                             <div class="card-body">
                                 <h4 class="card-title">Clinic Info</h4>
                                 <div class="row form-row">
@@ -220,7 +258,7 @@
                             </div>
                         </div>
 
-                        <div class="card contact-card">
+                        <div class="card contact-card profile-settings-card">
                             <div class="card-body">
                                 <h4 class="card-title">Contact Details</h4>
                                 <div class="row form-row">
@@ -275,7 +313,7 @@
                             </div>
                         </div>
 
-                        <div class="card">
+                        <div class="card profile-settings-card">
                             <div class="card-body">
                                 <h4 class="card-title">Pricing</h4>
 
@@ -306,7 +344,7 @@
                             </div>
                         </div>
 
-                        <div class="card services-card">
+                        <div class="card services-card profile-settings-card">
                             <div class="card-body">
                                 <h4 class="card-title">Services and Specialization</h4>
 
@@ -330,7 +368,7 @@
                             </div>
                         </div>
 
-                        <div class="card">
+                        <div class="card profile-settings-card">
                             <div class="card-body">
                                 <h4 class="card-title">Education</h4>
                                 <div class="education-info">
@@ -382,7 +420,7 @@
                             </div>
                         </div>
 
-                        <div class="card">
+                        <div class="card profile-settings-card">
                             <div class="card-body">
                                 <h4 class="card-title">Experience</h4>
                                 <div class="experience-info">
@@ -442,7 +480,7 @@
                             </div>
                         </div>
 
-                        <div class="card">
+                        <div class="card profile-settings-card">
                             <div class="card-body">
                                 <h4 class="card-title">Awards</h4>
                                 <div class="awards-info">
@@ -482,7 +520,7 @@
                             </div>
                         </div>
 
-                        <div class="card">
+                        <div class="card profile-settings-card">
                             <div class="card-body">
                                 <h4 class="card-title">Memberships</h4>
                                 <div class="membership-info">
@@ -508,7 +546,7 @@
                             </div>
                         </div>
 
-                        <div class="card">
+                        <div class="card profile-settings-card">
                             <div class="card-body">
                                 <h4 class="card-title">Registrations</h4>
                                 <div class="registrations-info">
