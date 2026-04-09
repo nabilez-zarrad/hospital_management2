@@ -81,6 +81,11 @@
     }
 </style>
 
+@php
+    $headerDoctor = auth()->user()->doctor;
+    $headerAvatarUrl = $headerDoctor?->profile_image_url ?? asset('front-end/assets/img/doctors/doctor-thumb-02.jpg');
+    $headerAvatarVersion = $headerDoctor?->updated_at?->timestamp;
+@endphp
 <header class="header">
     <nav class="navbar navbar-expand-lg header-nav">
         <div class="navbar-header">
@@ -101,7 +106,7 @@
             <li class="nav-item dropdown has-arrow logged-item">
                 <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
                     <span class="user-img">
-                        <img class="rounded-circle" src="{{ auth()->user()->doctor?->profile_image_url ?? asset('front-end/assets/img/doctors/doctor-thumb-02.jpg') }}" width="31" alt="User">
+                        <img class="rounded-circle" src="{{ $headerAvatarUrl }}{{ $headerAvatarVersion ? '?v=' . $headerAvatarVersion : '' }}" width="31" alt="User">
                     </span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right">

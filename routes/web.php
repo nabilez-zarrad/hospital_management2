@@ -10,7 +10,7 @@ use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\ProfilePatientController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -69,6 +69,7 @@ Route::middleware(['auth', 'patient'])->group(function () {
 
         return view('patient.booking_success', compact('booking'));
     })->name('booking.success');
+
 });
 
 // --- Hub: sends user to the right dashboard by role ---
@@ -82,5 +83,6 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-
+Route::delete('/doctor/clinic-image/{id}', [DoctorController::class, 'deleteClinicImage'])
+    ->name('clinic.image.delete');
 require __DIR__.'/auth.php';

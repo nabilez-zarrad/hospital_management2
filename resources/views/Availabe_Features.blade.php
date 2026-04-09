@@ -1,4 +1,4 @@
-<section class="section section-features">
+<section class="section section-features"    id="availabe">
 				<div class="container-fluid">
 				   <div class="row">
 						<div class="col-md-5 features-img">

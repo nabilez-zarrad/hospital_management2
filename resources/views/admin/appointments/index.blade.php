@@ -71,7 +71,21 @@
             </div>
         </div>
         @if ($appointments->hasPages())
-            <div class="card-footer">{{ $appointments->links() }}</div>
-        @endif
+    <div class="card-footer d-flex justify-content-between align-items-center">
+
+        <!-- عدد النتائج -->
+        <div class="text-muted small">
+            Showing {{ $appointments->firstItem() }} 
+            to {{ $appointments->lastItem() }} 
+            of {{ $appointments->total() }} results
+        </div>
+
+        <!-- pagination -->
+        <div>
+            {{ $appointments->links('pagination::bootstrap-5') }}
+        </div>
+
+    </div>
+@endif
     </div>
 @endsection

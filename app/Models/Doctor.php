@@ -78,10 +78,10 @@ class Doctor extends Model
         return $this->belongsToMany(Patient::class, 'patient_favourites', 'doctor_id', 'patient_id');
     }
 
-    public function clinicImages()
-    {
-        return $this->hasMany(DoctorClinicImage::class);
-    }
+   public function clinicImages()
+{
+    return $this->hasMany(\App\Models\DoctorClinicImage::class);
+}
 
     public function services()
     {

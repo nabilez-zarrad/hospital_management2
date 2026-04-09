@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+
+
 use App\Models\Appointment;
 use App\Models\Doctor;
 use App\Models\DoctorAward;
@@ -15,6 +17,7 @@ use App\Models\DoctorSpecialization;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class DoctorController extends Controller
 {
@@ -148,8 +151,11 @@ class DoctorController extends Controller
         ]);
 
         DB::transaction(function () use ($request, $doctor, $validated) {
+            $newImagePath = null;
+            $oldImagePath = $doctor->image;
+
             if ($request->hasFile('image')) {
-                $validated['image'] = $request->file('image')->store('doctors', 'public');
+                $newImagePath = $request->file('image')->store('doctors', 'public');
             }
 
             if ((int) $validated['is_free'] === 1) {
@@ -175,7 +181,7 @@ class DoctorController extends Controller
                 'postal_code' => $validated['postal_code'] ?? null,
                 'price' => $validated['price'] ?? 0,
                 'is_free' => $validated['is_free'],
-                'image' => $validated['image'] ?? $doctor->image,
+                'image' => $newImagePath ?? $doctor->image,
             ]);
 
             if ($doctor->user) {
@@ -259,9 +265,15 @@ class DoctorController extends Controller
                     DoctorClinicImage::create(['doctor_id' => $doctor->id, 'image' => $path]);
                 }
             }
+
+            if ($newImagePath && $oldImagePath && Storage::disk('public')->exists($oldImagePath)) {
+                Storage::disk('public')->delete($oldImagePath);
+            }
         });
 
-        return back()->with('success', 'Profile updated successfully.');
+        return redirect()
+            ->route('doctor.profile_settings')
+            ->with('success', 'Profile updated successfully.');
     }
 
     public function my_patients()
@@ -311,4 +323,30 @@ class DoctorController extends Controller
     {
         return $this->cancelAppointmentDoctor($id);
     }
+
+
+
+
+
+
+
+
+
+
+
+public function deleteClinicImage($id)
+{
+    $image = DoctorClinicImage::findOrFail($id);
+
+    // حذف من storage (بلا exists)
+    if ($image->image) {
+        Storage::disk('public')->delete($image->image);
+    }
+
+    // حذف من DB
+    $image->delete();
+
+    return back()->with('success', 'Image deleted successfully');
+}
+
 }

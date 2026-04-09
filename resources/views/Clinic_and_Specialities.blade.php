@@ -1,4 +1,4 @@
-<section class="section section-specialities">
+<section class="section section-specialities" id='specialities'>
 
 <div class="container-fluid">
 

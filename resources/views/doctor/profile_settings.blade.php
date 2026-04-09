@@ -2,10 +2,11 @@
 <html lang="en">
 	
 <!-- doccure/doctor-profile-settings.html  30 Nov 2019 04:12:14 GMT -->
-<head>
+	<head>
 		<meta charset="utf-8">
 		<title>Doccure</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+		<meta name="csrf-token" content="{{ csrf_token() }}">
 		
 		<!-- Favicons -->
 		<link href="{{ asset('front-end/assets/img/favicon.png') }}" rel="icon">
@@ -129,20 +130,31 @@
                                 <div class="row form-row">
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <div class="change-avatar">
-                                                <div class="profile-img">
-                                                    <img
-                                                        src="{{ $doctor && $doctor->image ? asset('storage/' . $doctor->image) : asset('front-end/assets/img/doctors/doctor-thumb-02.jpg') }}"
-                                                        alt="User Image">
-                                                </div>
-                                                <div class="upload-img">
-                                                    <div class="change-photo-btn">
-                                                        <span><i class="fa fa-upload"></i> Upload Photo</span>
-                                                        <input type="file" class="upload" name="image">
-                                                    </div>
-                                                    <small class="form-text text-muted">Allowed JPG, GIF or PNG. Max size of 2MB</small>
-                                                </div>
-                                            </div>
+                                        @php
+    $doctorImageUrl = $doctor && $doctor->image
+        ? asset('storage/' . $doctor->image)
+        : asset('front-end/assets/img/doctors/doctor-thumb-02.jpg');
+
+    $doctorImageVersion = $doctor?->updated_at?->timestamp;
+@endphp
+
+<div class="change-avatar">
+    <div class="profile-img">
+        <img
+            src="{{ $doctorImageUrl }}{{ $doctorImageVersion ? '?v=' . $doctorImageVersion : '' }}"
+            alt="User Image">
+    </div>
+
+    <div class="upload-img">
+        <div class="change-photo-btn">
+            <span><i class="fa fa-upload"></i> Upload Photo</span>
+            <input type="file" class="upload" name="image">
+        </div>
+        <small class="form-text text-muted">
+            Allowed JPG, GIF or PNG. Max size of 2MB
+        </small>
+    </div>
+</div>
                                         </div>
                                     </div>
 
@@ -242,17 +254,24 @@
                                         <div class="form-group">
                                             <label>Clinic Images</label>
                                             <input type="file" name="clinic_images[]" multiple class="form-control">
-                                        </div>
+                                              @if(isset($doctor) && $doctor->clinicImages && $doctor->clinicImages->count())
+                                                <div class="upload-wrap mt-3" id="clinic-images-wrap">
+                                                    @foreach($doctor->clinicImages as $clinicImage)
+                                                        <div class="upload-images d-inline-block mr-2 mb-2" data-clinic-image-id="{{ $clinicImage->id }}">
+                                                            <img src="{{ asset('storage/' . $clinicImage->image) }}" width="100" alt="Clinic image">
+                                                            <button
+                                                                type="button"
+                                                                class="btn btn-danger btn-sm"
+                                                                data-delete-clinic-image
+                                                                data-image-id="{{ $clinicImage->id }}">
+                                                                <i class="far fa-trash-alt"></i>
+                                                            </button>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            @endif
 
-                                        @if(isset($doctor) && $doctor->clinicImages && $doctor->clinicImages->count())
-                                            <div class="upload-wrap">
-                                                @foreach($doctor->clinicImages as $clinicImage)
-                                                    <div class="upload-images mr-2 mb-2 d-inline-block">
-                                                        <img src="{{ asset('storage/' . $clinicImage->image) }}" alt="Upload Image" width="100">
-                                                    </div>
-                                                @endforeach
-                                            </div>
-                                        @endif
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -591,6 +610,7 @@
                         </div>
                     </form>
 
+                  
                 </div>
             </div>
         </div>
@@ -623,8 +643,55 @@
 		
 		<!-- Custom JS -->
 		<script src="{{ asset('front-end/assets/js/script.js') }}"></script>
+
+        <script>
+            document.addEventListener('click', function (event) {
+                var deleteButton = event.target.closest('[data-delete-clinic-image]');
+                if (!deleteButton) {
+                    return;
+                }
+
+                event.preventDefault();
+
+                var imageId = deleteButton.getAttribute('data-image-id');
+                if (!imageId) {
+                    return;
+                }
+
+                if (!confirm('Delete this image?')) {
+                    return;
+                }
+
+                var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                fetch('/clinic-image/' + imageId, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(function (response) {
+                    if (!response.ok) {
+                        throw new Error('Delete failed');
+                    }
+                    return response.json().catch(function () {
+                        return { success: true };
+                    });
+                })
+                .then(function () {
+                    var imageEl = deleteButton.closest('[data-clinic-image-id]');
+                    if (imageEl) {
+                        imageEl.remove();
+                    }
+                })
+                .catch(function () {
+                    alert('Unable to delete image. Please try again.');
+                });
+            });
+        </script>
 		
 	</body>
 
-<!-- doccure/doctor-profile-settings.html  30 Nov 2019 04:12:15 GMT -->
 </html>

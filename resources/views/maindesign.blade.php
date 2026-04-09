@@ -20,12 +20,60 @@
 		
 		<!-- Main CSS -->
 		<link rel="stylesheet" href={{ asset('front-end/assets/css/style.css') }}>
+		<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;800&display=swap" rel="stylesheet">
+		<style>
 		
-		<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-		{{-- [if lt IE 9]>
-			<script src="front-end/assets/js/html5shiv.min.js"></script>
-			<script src="front-end/assets/js/respond.min.js"></script>
-		<![endif] --}}
+
+
+		.hero-title {
+    font-family: 'Poppins', sans-serif;
+}
+.hero-text {
+    padding: 90px 20px;
+}
+
+/* 🔥 Title كبير ومبهر */
+.hero-title {
+    font-size: 80px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #2563eb, #06b6d4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 1px;
+    animation: glowFade 1.2s ease;
+}
+
+/* subtitle */
+.hero-subtitle {
+    font-size: 40px;
+    color: #64748b;
+    margin-top: 15px;
+    animation: fadeUp 1.5s ease;
+}
+
+/* animation */
+@keyframes glowFade {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+		</style>
 	
 	</head>
 	<body>
@@ -58,15 +106,17 @@
 							</a>
 						</div>
 						<ul class="main-nav">
-							<li class="active">
-								<a href="{{ route('index') }}">Home</a>
+							<li >
+								<a href="#specialities">Specialities</a>
 							</li>
-							<li>
-								<a href="{{ route('doctors') }}">Doctors</a>
-							</li>	
-							<li>
-								<a href="{{ auth()->check() ? route('dashboard') : route('login') }}">Dashboard</a>
-							</li>	
+							<li >
+								<a href="#doctor">Doctor</a>
+							</li>
+							<li >
+								<a href="#availabe">Availabe</a>
+							</li>
+								
+								
 							@auth
 								@if(auth()->user()->role === 'admin')
 									<li><a href="{{ route('admin.dashboard') }}">Admin</a></li>
@@ -187,13 +237,7 @@
 							
 								<!-- Footer Widget -->
 								<div class="footer-widget footer-menu">
-									<h2 class="footer-title">For Patients</h2>
-									<ul>
-										<li><a href="{{ route('doctors') }}"><i class="fas fa-angle-double-right"></i> Search for Doctors</a></li>
-										<li><a href="{{ route('login') }}"><i class="fas fa-angle-double-right"></i> Login</a></li>
-										<li><a href="{{ route('register') }}"><i class="fas fa-angle-double-right"></i> Register</a></li>
-										<li><a href="{{ auth()->check() ? route('dashboard') : route('login') }}"><i class="fas fa-angle-double-right"></i> Dashboard</a></li>
-									</ul>
+									
 								</div>
 								<!-- /Footer Widget -->
 								
@@ -203,12 +247,7 @@
 							
 								<!-- Footer Widget -->
 								<div class="footer-widget footer-menu">
-									<h2 class="footer-title">For Doctors</h2>
-									<ul>
-										<li><a href="{{ route('doctors') }}"><i class="fas fa-angle-double-right"></i> Doctors Directory</a></li>
-										<li><a href="{{ route('login') }}"><i class="fas fa-angle-double-right"></i> Login</a></li>
-										<li><a href="{{ route('register') }}"><i class="fas fa-angle-double-right"></i> Register</a></li>
-									</ul>
+									
 								</div>
 								<!-- /Footer Widget -->
 								
@@ -247,29 +286,8 @@
                 <div class="footer-bottom">
 					<div class="container-fluid">
 					
-						<!-- Copyright -->
-						<div class="copyright">
-							<div class="row">
-								<div class="col-md-6 col-lg-6">
-									<div class="copyright-text">
-										<p class="mb-0"><a href="templateshub.net">Templates Hub</a></p>
-									</div>
-								</div>
-								<div class="col-md-6 col-lg-6">
-								
-									<!-- Copyright Menu -->
-									<div class="copyright-menu">
-										<ul class="policy-menu">
-											<li><a href="term-condition.html">Terms and Conditions</a></li>
-											<li><a href="privacy-policy.html">Policy</a></li>
-										</ul>
-									</div>
-									<!-- /Copyright Menu -->
-									
-								</div>
-							</div>
-						</div>
-						<!-- /Copyright -->
+						
+						
 						
 					</div>
 				</div>

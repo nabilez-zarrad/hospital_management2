@@ -22,6 +22,37 @@
 		<!-- Main CSS -->
         <link rel="stylesheet" href={{ asset('admin_end/assets/css/style.css') }} >
 		<style>
+			.pagination {
+    margin-bottom: 0;
+}
+
+.page-item .page-link {
+    border-radius: 10px;
+    margin: 0 3px;
+    color: #2563eb;
+    border: 1px solid #e2e8f0;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+/* hover */
+.page-item .page-link:hover {
+    background: #2563eb;
+    color: #fff;
+}
+
+/* active */
+.page-item.active .page-link {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    border: none;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+/* disabled */
+.page-item.disabled .page-link {
+    opacity: 0.5;
+}
 			:root {
 				--admin-primary-start: #0b132b;
 				--admin-primary-mid: #1c2541;

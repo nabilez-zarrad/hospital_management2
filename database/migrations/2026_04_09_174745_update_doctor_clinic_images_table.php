@@ -11,12 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-      Schema::create('doctor_clinic_images', function (Blueprint $table) {
-    $table->id();
-    $table->foreignId('doctor_id')->constrained()->cascadeOnDelete();
-    $table->string('image')->nullable();
-    $table->timestamps();
-});
+         Schema::table('doctor_clinic_images', function (Blueprint $table) {
+        $table->string('image')->nullable()->change();
+    });
     }
 
     /**
@@ -24,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('doctor_clinic_images');
+         Schema::table('doctor_clinic_images', function (Blueprint $table) {
+        $table->string('image')->nullable(false)->change();
+    });
     }
 };

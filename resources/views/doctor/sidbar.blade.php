@@ -47,12 +47,17 @@
     }
 </style>
 
+@php
+    $sidebarDoctor = auth()->user()->doctor;
+    $sidebarAvatarUrl = $sidebarDoctor?->profile_image_url ?? asset('front-end/assets/img/doctors/doctor-thumb-02.jpg');
+    $sidebarAvatarVersion = $sidebarDoctor?->updated_at?->timestamp;
+@endphp
 <div class="col-md-5 col-lg-4 col-xl-3 theiaStickySidebar">
     <div class="profile-sidebar">
         <div class="widget-profile pro-widget-content">
             <div class="profile-info-widget">
                 <a href="#" class="booking-doc-img">
-                    <img src="{{ auth()->user()->doctor?->profile_image_url ?? asset('front-end/assets/img/doctors/doctor-thumb-02.jpg') }}" alt="User Image">
+                    <img src="{{ $sidebarAvatarUrl }}{{ $sidebarAvatarVersion ? '?v=' . $sidebarAvatarVersion : '' }}" alt="User Image">
                 </a>
                 <div class="profile-det-info">
                     <h3>Dr. {{ auth()->user()->doctor?->full_name ?? 'Doctor' }}</h3>

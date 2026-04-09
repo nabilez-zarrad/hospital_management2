@@ -140,6 +140,38 @@
                                     <i class="fas fa-map-marker-alt"></i>
                                     {{ $doctor->location_label }}
                                 </p>
+                                
+<ul class="clinic-gallery">
+    @if($doctor->clinicImages && $doctor->clinicImages->count())
+    <ul class="clinic-gallery d-flex flex-wrap" style="gap:10px;">
+
+        @foreach($doctor->clinicImages as $image)
+            @if($image->image)
+                <li style="list-style:none;">
+                    
+                    <a href="{{ asset('storage/' . $image->image) }}" data-fancybox="gallery">
+                        <img 
+                            src="{{ asset('storage/' . $image->image) }}" 
+                            alt="Clinic Image"
+                            style="width:60px; height:50px; object-fit:cover; border-radius:10px;">
+                    </a>
+
+                </li>
+            @endif
+        @endforeach
+
+    </ul>
+@endif
+
+
+
+                          
+
+                        
+                    
+
+
+
                                 <div class="clinic-services">
                                     @forelse($doctor->services as $service)
                                         <span>{{ $service->service }}</span>
@@ -147,6 +179,11 @@
                                         <span>No services added</span>
                                     @endforelse
                                 </div>
+
+
+                  
+
+
                             </div>
                         </div>
                         <div class="doc-info-right">
